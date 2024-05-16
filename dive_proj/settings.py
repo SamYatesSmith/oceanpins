@@ -43,10 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cloudinary_storage',
-    'django.contrib.staticfiles',
     'cloudinary',
     'dive_app',
-
+    'profiles',
+    'dives',
+    'wishlist',
 ]
 
 MIDDLEWARE = [
