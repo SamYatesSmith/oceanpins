@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['8000-samyatessmith-oceanpins-afvm4g1x7r4.ws-eu111.gitpod.io', 'dive_app.herokuapp.com', 'ec2-52-31-2-97.eu-west-1.compute.amazonaws.com']
 
