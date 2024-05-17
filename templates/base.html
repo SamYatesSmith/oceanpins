@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Ocean Pins{% endblock %}</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static '/workspace/oceanpins/static/css/styles.css' %}"> CSS Stylesheet
+    <link rel="stylesheet" href="{% static '/workspace/oceanpins/static/css/styles.css' %}">
 </head>
 
 <body>
@@ -19,7 +19,7 @@
                     <li class="nav-item"><a href="{% url 'home' %}" class="nav-link text-white">Home</a></li>
                     <li class="nav-item"><a href="{% url 'map' %}" class="nav-link text-white">Interactive Map</a></li>
                     <li class="nav-item"><a href="{% url 'profile' %}" class="nav-link text-white">Profile</a></li>
-                    <li class="nav-item"><a href="{% url 'login' %}" class="nav-link text-white">Login / Sign Up</a></li>
+                    <li class="nav-item"><a href="{% url 'register' %}" class="nav-link text-white">Login / Sign Up</a></li>
                 </ul>
             </nav>
         </div>
