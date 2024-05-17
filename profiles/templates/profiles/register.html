@@ -1,11 +1,10 @@
-
 {% extends 'base.html' %}
 
-{% block title %}Sign Up{% endblock %}
+{% block title %}Register{% endblock %}
 
 {% block content %}
-<div class="signup-form">
-    <h1 class="text-center mb-4">Sign Up</h1>
+<div class="register-form">
+    <h1 class="text-center mb-4">Register</h1>
     <form method="post" class="w-50 mx-auto">
         {% csrf_token %}
         <div class="form-group">
@@ -24,7 +23,7 @@
             <label for="password2">Confirm Password</label>
             <input type="password" id="password2" name="password2" class="form-control" placeholder="Confirm Password">
         </div>
-        <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
     </form>
 </div>
 {% endblock %}
