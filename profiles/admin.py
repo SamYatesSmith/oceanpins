@@ -6,12 +6,12 @@ from .models import Profile
 
 # Models
 
-class ProfileInLine(admin.StackedInLine):
+class ProfileInLine(admin.StackedInline):
     model = Profile
     can_delete = False
 
 class CustomUserAdmin(UserAdmin):
-    inlines = (ProfileInLine)
+    inlines = [ProfileInLine]
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)

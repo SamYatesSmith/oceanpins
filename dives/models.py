@@ -1,11 +1,11 @@
 from django.db import models
-from Django.contrib.auth.models import User
+from django.contrib.auth.models import User
 
 
 # Create your models here.
 
 class Dive(models.Model):
-    user = mopdels.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     location = models.CharField(max_length=255)
     date = models.DateField()
     depth = models.FloatField()
