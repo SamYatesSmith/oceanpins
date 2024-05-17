@@ -6,6 +6,15 @@
 {% block content %}
 <div class="login-form">
     <h1 class="text-center mb-4">Login</h1>
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+       {% endif %} 
     <form method="post" class="w-50 mx-auto">
         {% csrf_token %}
         <div class="form-group">
