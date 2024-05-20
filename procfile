@@ -1,1 +1,1 @@
-	web: gunicorn dive_app.wsgi
+	web: gunicorn dive_proj.wsgi
