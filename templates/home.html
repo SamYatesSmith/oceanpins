@@ -3,12 +3,16 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div class="hero text-center">
-    <h1 class="display-4">Welcome to Ocean Pins</h1>
-    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    <a href="{% url 'login' %}" class="btn btn-primary btn-lg">Login</a>
+<div class="hero">
+    <div class="overlay"></div>
+    <div class="hero-content d-flex align-items-center justify-content-between">
+        <div class="hero-text">
+            <h1 class="display-4 wavy-text">Welcome to Ocean Pins</h1>
+            <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+        <div class="hero-button">
+            <a href="{% url 'login' %}" class="btn btn-lg btn-wide">Login</a>
+        </div>
+    </div>
 </div>
-<!-- <div class="background-image" style="background-image: url('#'); height: 500px; background-size: cover;"> -->
-    <!-- Background image with underwater tranquil theme -->
-</div>
-{% endblock %}
+á{% endblock %}

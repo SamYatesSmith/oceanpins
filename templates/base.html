@@ -7,39 +7,54 @@
     <title>{% block title %}Ocean Pins{% endblock %}</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body>
 
-    <header class="bg-dark text-white py-3">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="logo">Logo</div>
-            <nav>
-                <ul class="nav">
-                    <li class="nav-item"><a href="{% url 'home' %}" class="nav-link text-white">Home</a></li>
-                    <li class="nav-item"><a href="{% url 'map' %}" class="nav-link text-white">Interactive Map</a></li>
-                    <li class="nav-item"><a href="{% url 'profile' %}" class="nav-link text-white">Profile</a></li>
-                    <li class="nav-item"><a href="{% url 'login_signup_choice' %}" class="nav-link text-white">Login / Sign Up</a></li>
-                </ul>
-            </nav>
+    <header class="header-overlay">
+        <div class="container-fluid">
+            <div class="row w-100">
+                <div class="col d-flex align-items-center justify-content-start logo-container">
+                    <a href="{% url 'home' %}" class="text-white text-decoration-none"></a>
+                    <img src="{% static 'images/logo.png' %}" alt="Ocean Pins Logo" class="logo-img">
+                </div>
+                <div class="col-8 d-flex justify-content-center align-items-center">
+                    <nav>
+                        <ul class="nav">
+                            <li class="nav-item"><a href="{% url 'home' %}" class="nav-link text-white">Home</a></li>
+                            <li class="nav-item"><a href="{% url 'map' %}" class="nav-link text-white">Interactive Map</a></li>
+                            <li class="nav-item"><a href="{% url 'profile' %}" class="nav-link text-white">Profile</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col d-flex align-items-center justify-content-end login-container">
+                    <a href="{% url 'login_signup_choice' %}" class="nav-link text-white">Login / Sign Up</a>
+                </div>
+            </div>
         </div>
     </header>
 
-    <main class="container my-5">
+    <main>
         {% block content %}
         {% endblock %}
     </main>
 
-    <footer class="bg-dark text-white py-3">
+    <footer class="footer-overlay">
         <div class="container text-center">
             <div class="social-media mb-3">
-                <a href="#"><img src="{% static 'images/twitter.png' %}" alt="Twitter" class="mx-2"></a>
-                <a href="#"><img src="{% static 'images/facebook.png' %}" alt="Facebook" class="mx-2"></a>
-                <a href="#"><img src="{% static 'images/instagram.png' %}" alt="Instagram" class="mx-2"></a>
+                <a href="https://twitter.com" target="_blank" class="text-white mx-2"><i class="fab fa-twitter"></i></a>
+                <a href="https://facebook.com" target="_blank" class="text-white mx-2"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://instagram.com" target="_blank" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
             </div>
             <p>&copy; 2024 Ocean Pins</p>
         </div>
     </footer>
     
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{% static 'javascript/script.js' %}"></script>
 
 </body>
+</html>
