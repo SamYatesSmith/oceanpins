@@ -1,3 +1,25 @@
+/* Fonts */
+
+.header-overlay .nav-item a,
+.header-overlay .login-container a {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 100;
+    font-size: 19px;
+}
+
+.lead {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 100;
+    font-size: 1.5rem;
+}
+
+.display-4 {
+    font-family: 'Syncopate', Josefin Sans;
+    font-weight: 200;
+    font-size: 4rem;
+    letter-spacing: 0.4em;
+}
+
 body {
     display: flex;
     flex-direction: column;
@@ -154,21 +176,89 @@ body {
 /* Button Styles */
 
 .hero .btn {
+    font-family: 'josefin sans', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.3em;;
     padding: 0.75rem 1.5rem;
     font-size: 1.25rem;
-    background: white;
-    color: #d63384;
+    color: white;
     text-decoration: none;
+    background: transparent;
+    border: 2px solid white;
     border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: color 0.3s ease-in-out, border-color 0s ease-in-out;
+}
+
+.hero .btn:hover {
+    background: transparent;
+    color: white;
+    border-color: transparent;
+}
+/* Rotating button border effect */
+.hero .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 4px solid transparent;
+    box-sizing: border-box;
+    border-radius: 5px;
+    z-index: -1;
+}
+
+.hero .btn:hover::before {
+    animation: border-rotate 1s infinite linear;
+    border-color: white;
+}
+
+/* Keyframes for the rotating border */
+@keyframes border-rotate {
+    0% {
+        border-top-color: white;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+    }
+    25% {
+        border-top-color: transparent;
+        border-right-color: white;
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+    }
+    50% {
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-bottom-color: white;
+        border-left-color: transparent;
+    }
+    75% {
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        border-left-color: white;
+    }
+    100% {
+        border-top-color: white;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+    }
 }
 
 .hero .btn:hover {
     transform: scale(1.2);
+    background: transparent;
+    color: white;
 }
 
 .hero .btn:hover {
-    background: white;
-    color: #d63384;
+    background: transparent;
+    color: white;
 }
 
 .btn-wide {
@@ -194,6 +284,8 @@ footer .social-media a {
     color: #fff;
     text-decoration: none;
 }
+
+/* LOGIN */
 
 form {
     max-width: 400px;
@@ -230,6 +322,36 @@ form button {
 form button:hover {
     background-color: #004d40;
 }
+
+.login-background {
+    min-height: 100vh;
+    background-image: url('../images/login.jpg');
+    background-size: cover;
+    background-position: right center !important;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-form {
+    width: 70%;
+    max-width: 800px;
+    background-color: rgba(255, 255, 255, 0.3);
+    padding: 2rem;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* MAP */
 
 .map-container {
     text-align: center;

@@ -1,3 +1,5 @@
+/* Home page, H1 'wavy' text effect */
+
 document.addEventListener("DOMContentLoaded", function() {
     const wavyTextElements = document.querySelectorAll('.wavy-text');
     
