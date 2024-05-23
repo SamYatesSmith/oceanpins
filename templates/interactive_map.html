@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Interactive Map{% endblock %}
 
@@ -63,12 +64,13 @@
                         <label for="bottomTime">Bottom Time</label>
                         <input type="number" class="form-control" id="bottomTime" required>
                     </div>
+                    <button type="submit" class="btn btn-primary">Add Dive</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&callback=initMap"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&callback=initMap" async defer></script>
 <script src="{% static 'javascript/map.js' %}"></script>
 {% endblock %}
