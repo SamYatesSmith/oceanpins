@@ -15,3 +15,16 @@ class Dive(models.Model):
 
     def __str__(self):
         return f"{self.location} - {self.date}"
+
+class DiveLog(models.Model):
+    date = models.DateField()
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    buddy = models.CharField(max_length=255)
+    depth = models.FloatField()
+    temp = models.FloatField()
+    visibility = models.FloatField()
+    bottom_time = models.FloatField()
+
+    def __str__(self):
+        return self.name

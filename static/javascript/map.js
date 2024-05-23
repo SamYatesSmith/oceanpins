@@ -12,9 +12,16 @@ function initMap() {
             zoom: 8,
         });
 
-        // Add a click listener to the map
-        map.addListener('click', (event) => {
+        // Add a double-click listener to the map
+        map.addListener('dblclick', (event) => {
+            event.stop();
             addMarker(event.latLng);
+            updateDiveFormLocation(event.latLng);
+        });
+
+        // Prevent the default double-click zoom behavior
+        map.addListener('dblclick', (event) => {
+            event.stop();
         });
 
         // Ensure the map resizes correctly
@@ -30,17 +37,20 @@ function initMap() {
 
 // Function to add a marker on the map using AdvancedMarkerElement
 function addMarker(location) {
-    const marker = new google.maps.marker.AdvancedMarkerElement({
+    const marker = new google.maps.Marker({
         position: location,
         map: map,
     });
+
+    marker.addListener('click', () => {
+        updateDiveFormLocation(location);
+    });
 }
 
-// Function to show the dive form modal
-function showDiveForm(location) {
+// Function to update the dive form location field
+function updateDiveFormLocation(location) {
     const latLngStr = `${location.lat()}, ${location.lng()}`;
     document.getElementById('diveLocation').value = latLngStr;
-    $('#addDiveModal').modal('show');
 }
 
 // Ensure DOM content is loaded before adding event listeners
@@ -65,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to add a dive to the map and send data to the server
     function addDive(diveLog) {
         const [lat, lng] = diveLog.location.split(',').map(Number);
-        const marker = new google.maps.marker.AdvancedMarkerElement({
+        const marker = new google.maps.Marker({
             position: { lat, lng },
             map: map,
             title: diveLog.name,
@@ -76,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showDiveCard(diveLog);
         });
         // Send the dive log data to the server
-        fetch('/api/addDive', {
+        fetch('/dives/addDive/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

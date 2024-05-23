@@ -26,4 +26,5 @@ urlpatterns = [
     path('signup/', TemplateView.as_view(template_name='signup.html'), name='signup'),
     path('profile/', TemplateView.as_view(template_name='profile.html'), name='profile'),
     path('login_signup_choice/', TemplateView.as_view(template_name='profiles/login_signup_choice.html'), name='login_signup_choice'),
+    path('dives/', include('dives.urls')),
 ]
