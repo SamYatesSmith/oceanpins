@@ -1,3 +1,8 @@
+:root {
+    --header-height: 90px;
+    --footer-height: 90px;
+}
+
 /* Fonts */
 
 .header-overlay .nav-item a,
@@ -20,10 +25,10 @@
     letter-spacing: 0.4em;
 }
 
-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+/* Styles */
+
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
@@ -34,7 +39,6 @@ body {
     left: 0;
     right: 0;
     z-index: 2;
-    padding: 1rem 0;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: space-between;
@@ -43,10 +47,12 @@ body {
 
 .header-overlay {
     top: 0;
+    height: var(--header-height);
 }
 
 .footer-overlay {
     bottom: 0;
+    height: var(--footer-height);
     justify-content: center;
 }
 
@@ -106,6 +112,11 @@ body {
 
 .main {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--header-height);
+    margin-bottom: var(--footer-height);
+    height: calc(100vh - var(--header-height) - var(--footer-height));
 }
 
 .hero {
@@ -354,19 +365,32 @@ form button:hover {
 /* MAP */
 
 .map-container {
-    text-align: center;
-    padding: 2rem;
+    display: flex;
+    flex: 1;
 }
 
-.map {
+#map {
     width: 100%;
-    height: 500px;
     background-color: #e0f7fa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .map-tools {
-    margin-bottom: 1rem;
+    flex: 0 0 300px;
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .map-container {
+        padding: 0.5rem;
+    }
+
+    .map {
+        height: 60vh;
+    }
+
+    .header-overlay, .footer-overlay {
+        padding: 0.5rem;
+    }
 }
