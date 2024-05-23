@@ -20,24 +20,55 @@
 </div>
 
 <!-- Adding Dive Modal -->
-<div class="modal fade" id="addDiveModal" aria-labelledby="addDiveModalLabel" aria-hidden="true">
+<div class="modal fade" id="addDiveModal" tabindex="-1" role="dialog" aria-labelledby="addDiveModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class ="modal-header">
                 <h5 class="modal-title" id="addDiveModalLabel">Add Dives</h5>
-                <button type="button" class="close" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <form id="addDiveForm">
                     <div class="form-group">
+                        <label for="diveDate">Date</label>
+                        <input type="date" class="form-control" id="diveDate" required>
+                    </div>
+                    <div class="form-group">
                         <label for="diveName">Dive Name</label>
-                        <input type="text" class="form-control" id="diveName">
+                        <input type="text" class="form-control" id="diveName" required>>
+                    </div>
+                    <div class="form-group">
+                        <label for="diveLocation">Location</label>
+                        <input type="text" class="form-control" id="diveLocation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="diveBuddy">Dive Buddy</label>
+                        <input type="text" class="form-control" id="diveBuddy" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="diveDepth">Depth (m)</label>
+                        <input type="number" class="form-control" id="diveDepth" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="diveDepth">Water Temp (°C)</label>
+                        <input type="number" class="form-control" id="diveDepth" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="visibility">Visibility (m)</label>
+                        <input type="number" class="form-control" id="visibility" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bottomTime">Bottom Time</label>
+                        <input type="number" class="form-control" id="bottomTime" required>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&callback=initMap"></script>
+<script src="{% static 'javascript/map.js' %}"></script>
 {% endblock %}
