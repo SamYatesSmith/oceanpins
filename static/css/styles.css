@@ -1,6 +1,6 @@
 :root {
     --header-height: 90px;
-    --footer-height: 90px;
+    --footer-height: 80px;
 }
 
 /* Fonts */
@@ -25,13 +25,22 @@
     letter-spacing: 0.4em;
 }
 
+/* Page backdrops */
+
+
+
 /* Styles */
 
+body {
+    background: url('../images/openwater.jpg') center/cover no-repeat;
+}
+
 html, body {
-    height: 100%;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+    height: 100%;
+    overflow-x: hidden;
 }
 
 .header-overlay, .footer-overlay {
@@ -56,7 +65,7 @@ html, body {
     justify-content: center;
 }
 
-.header-overlay .container-fluid, .footer-overlay .container {
+.header-overlay, .footer-overlay .container {
     padding-left: 5%;
     padding-right: 5%;
 }
@@ -116,13 +125,13 @@ html, body {
     flex-direction: column;
     margin-top: var(--header-height);
     margin-bottom: var(--footer-height);
-    height: calc(100vh - var(--header-height) - var(--footer-height));
+    min-height: calc(100vh - var(--header-height) - var(--footer-height));
 }
 
 .hero {
     position: relative;
     height: 100vh;
-    background-image: url('../images/hero.jpg');
+    background-image: url('../images/coralreefshipwreck.jpg');
     background-size: cover;
     background-position: center;
     color: #fff;
@@ -300,11 +309,13 @@ footer .social-media a {
 
 form {
     max-width: 400px;
-    margin: 2rem auto;
-    padding: 2rem;
+    max-height: 500px;
+    margin: 1.5rem auto;
+    padding: 1.5rem;
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
 }
 
 form label {
@@ -336,7 +347,7 @@ form button:hover {
 
 .login-background {
     min-height: 100vh;
-    background-image: url('../images/login.jpg');
+    background-image: url('../images/breachingwhale.jpg');
     background-size: cover;
     background-position: right center !important;
     background-repeat: no-repeat;
@@ -354,31 +365,103 @@ form button:hover {
 }
 
 .login-form {
-    width: 70%;
-    max-width: 800px;
+    margin-top: 7%;
+    width: 60%;
+    max-width: 550px;
     background-color: rgba(255, 255, 255, 0.3);
-    padding: 2rem;
-    border-radius: 5px;
+    padding: 1rem;
+    border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 /* MAP */
 
+/* .container-fluid.main {
+    height: calc(100% - 50px);
+} */
+
+.heading-container {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 100;
+    font-size: 1.5rem;
+    padding-top: 10px;
+    padding-left: 10px;
+    color: white;
+}
+
+.heading-container h3 {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 100;
+    font-size: 1rem;
+    padding-left: 10px;
+    color: white;
+}
+
+.heading-container.text-left {
+    text-align: left;
+}
+
+.heading-container.text-center {
+    text-align: center;
+}
+
+.heading-container.mb-3 {
+    margin-bottom: 0;
+}
+
+.heading-container.full-width {
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+}
+
 .map-container {
+    margin: 25px;
+    box-sizing: border-box;
     display: flex;
     flex: 1;
 }
 
 #map {
-    width: 100%;
+    margin: 25px;
+    max-height: 500px;
+    width: 700px;
     background-color: #e0f7fa;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .map-tools {
-    flex: 0 0 300px;
-    height: 100%;
-    padding: 10px;
+    color: #3E55E6;
+    flex: 0 0 270px;
     box-sizing: border-box;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 1rem;
+}
+
+.map-tools h5 {
+    color: white;
+    margin-left: 8px;
+}
+
+body > .container-fluid {
+    padding-bottom: var(--footer-height);
+    padding-top: var(--header-height);
+    box-sizing: border-box;
+}
+
+.confirmation-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: rgba(0, 128, 0, 0.8);
+    color: white;
+    border-radius: 10px;
+    z-index: 1000;
+    text-align: center;
+    width: auto;
 }
 
 @media (max-width: 768px) {
@@ -392,5 +475,15 @@ form button:hover {
 
     .header-overlay, .footer-overlay {
         padding: 0.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .heading-container.text-left {
+        text-align: center;
+    }
+
+    .heading-container.mb-3 {
+        margin-bottom: 1rem;
     }
 }

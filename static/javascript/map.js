@@ -8,8 +8,10 @@ function initMap() {
     const mapDiv = document.getElementById('map');
     if (mapDiv) {
         map = new google.maps.Map(mapDiv, {
-            center: { lat: -34.397, lng: 150.644 },
-            zoom: 8,
+            center: { lat: 30.049, lng: 2.2277 },
+            zoom: 2,
+            mapTypeId: google.maps.MapTypeId.HYBRID,
+            streetViewControl: false
         });
 
         // Add a double-click listener to the map
@@ -17,6 +19,7 @@ function initMap() {
             event.stop();
             addMarker(event.latLng);
             updateDiveFormLocation(event.latLng);
+            showDiveForm();
         });
 
         // Prevent the default double-click zoom behavior
@@ -53,6 +56,31 @@ function updateDiveFormLocation(location) {
     document.getElementById('diveLocation').value = latLngStr;
 }
 
+// Function to show the dive form
+function showDiveForm() {
+    document.getElementById('addDiveForm').style.display = 'block';
+}
+
+// Function to hide the dive form
+function hideDiveForm() {
+    document.getElementById('addDiveForm').style.display = 'none';
+}
+
+// Function to show the confirmation message
+function showConfirmationMessage() {
+    console.log("showConfirmationMessage called");
+    const messageContainer = document.getElementById('confirmationMessage');
+    if (messageContainer) {
+        console.log("Confirmation message element found.");
+        messageContainer.style.display = 'block';
+        setTimeout(() => {
+            messageContainer.style.display = 'none';
+        }, 5000);
+    } else {
+        console.error("Confirmation message element not found.");
+    }
+}
+
 // Ensure DOM content is loaded before adding event listeners
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('addDiveForm').addEventListener('submit', function (e) {
@@ -70,6 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
             bottomTime: document.getElementById('bottomTime').value,
         };
         addDive(diveLog);
+        hideDiveForm();
+        showConfirmationMessage();
     });
 
     // Function to add a dive to the map and send data to the server
