@@ -4,95 +4,99 @@
 {% block title %}Interactive Map{% endblock %}
 
 {% block content %}
-
-    <div class="container-fluid main">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="heading-container text-left">
-                    <h1>Your dive Map</h1>
-                    <h3>Double click on the location of your dive to add a pin, then, fill out the available form to save the dive to your profile</h3>
+<div class="map-background">
+    <div class="map-container">
+        <div class="container-fluid main">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="heading-container text-left">
+                        <h1>Your Dive Map</h1>
+                        <h3 class="mapSubHead">Double click on the location of your dive to add a pin, then, fill out the available form to save the dive to your profile</h3>
+                    </div>
                 </div>
-                <div class="col-6 col-md-4">
+                <div class="col-md-3">
                     <div class="heading-container text-center mb-3 full-width">
                         <h5>Add your Dive details here</h5>
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-9 d-flex">
-                <div id='map' class="flex-fill">
-                <!-- Placeholder for the interactive map -->
-                </div>
-            </div>
-            <div class="col-md-3 d-flex flex-column">
-                <div class="map-tools">
-                    <div id="confirmationMessage" class="confirmation-message" style="display: none;">
-                        Your dive has been added to your profile map.
+            <div class="row">
+                <div class="col-md-9 d-flex">
+                    <div id='map' class="flex-fill">
+                    <!-- Placeholder for the interactive map -->
                     </div>
-                    <form id="addDiveForm">
-                        <div class="form-group">
-                            <label for="diveDate">Date</label>
-                            <input type="date" class="form-control" id="diveDate" required>
+                </div>
+                <div class="col-md-3 d-flex flex-column">
+                    <div class="map-tools">
+                        <div id="confirmationMessage" class="confirmation-message" style="display: none;">
+                            Your dive has been added to your profile map.
                         </div>
-                        <div class="form-group">
-                            <label for="diveName">Dive Name</label>
-                            <input type="text" class="form-control" id="diveName" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="diveLocation">Location</label>
-                            <input type="text" class="form-control" id="diveLocation" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="diveBuddy">Dive Buddy</label>
-                            <input type="text" class="form-control" id="diveBuddy" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="diveDepth">Depth (m)</label>
-                            <input type="number" class="form-control" id="diveDepth" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="waterTemp">Water Temp (°C)</label>
-                            <input type="number" class="form-control" id="waterTemp" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="visibility">Visibility (m)</label>
-                            <input type="number" class="form-control" id="visibility" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="bottomTime">Bottom Time</label>
-                            <input type="number" class="form-control" id="bottomTime" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Save Dive</button>
-                    </form>
+                        <form id="addDiveForm">
+                            <div class="form-group">
+                                <label for="diveDate">Date</label>
+                                <input type="date" class="form-control" id="diveDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="diveName">Dive Name</label>
+                                <input type="text" class="form-control" id="diveName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="diveLocation">Location</label>
+                                <input type="text" class="form-control" id="diveLocation" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="diveBuddy">Dive Buddy</label>
+                                <input type="text" class="form-control" id="diveBuddy" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="diveDepth">Depth (m)</label>
+                                <input type="number" class="form-control" id="diveDepth" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="waterTemp">Water Temp (°C)</label>
+                                <input type="number" class="form-control" id="waterTemp" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="visibility">Visibility (m)</label>
+                                <input type="number" class="form-control" id="visibility" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="bottomTime">Bottom Time</label>
+                                <input type="number" class="form-control" id="bottomTime" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Dive</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     
 
-<!-- Dive Details Modal -->
-    <div class="modal fade" id="diveCardModal" tabindex="-1" role="dialog" aria-labelledby="diveCardModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="diveCardModalLabel">Dive Details</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p id="diveNameDetail"></p>
-                    <p id="diveLocationDetail"></p>
-                    <p id="diveDateDetail"></p>
-                    <p id="diveDepthDetail"></p>
-                    <p id="diveBuddyDetail"></p>
-                    <p id="waterTempDetail"></p>
-                    <p id="visibilityDetail"></p>
-                    <p id="bottomTimeDetail"></p>
-                    <div id="diveGallery" class="d-flex flex-wrap"></div>
+        <!-- Dive Details Modal -->
+        <div class="modal fade" id="diveCardModal" tabindex="-1" role="dialog" aria-labelledby="diveCardModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="diveCardModalLabel">Dive Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="diveNameDetail"></p>
+                        <p id="diveLocationDetail"></p>
+                        <p id="diveDateDetail"></p>
+                        <p id="diveDepthDetail"></p>
+                        <p id="diveBuddyDetail"></p>
+                        <p id="waterTempDetail"></p>
+                        <p id="visibilityDetail"></p>
+                        <p id="bottomTimeDetail"></p>
+                        <div id="diveGallery" class="d-flex flex-wrap"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 <script src="{% static 'javascript/map.js' %}"></script>
 {% endblock %}

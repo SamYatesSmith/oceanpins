@@ -4,41 +4,51 @@
 {% block title %}Profile{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-3 text-center">
-            <div class="profile-picture mb-4">
-                <!-- Placeholder for user image/photo -->
-                <img src="{% static 'images/default-profile.png' %}" class="rounded-circle img-fluid" alt="User chosen image/photo">
-            </div>
-        </div>
-        <div class="col-md-9">
-            <h1 class="display-4">User's Name</h1>
-            <p class="lead">Country of origin</p>
-            <p class="bio">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum. Cras venenatis euismod malesuada.</p>
-            <div class="dive-info mb-4">
-                <ul class="list-group">
-                    <li class="list-group-item">Item One</li>
-                    <li class="list-group-item">Item Two</li>
-                    <li class="list-group-item">Item Three</li>
-                    <li class="list-group-item">Item Four</li>
-                    <li class="list-group-item">Item Five</li>
-                    <li class="list-group-item">Item Six</li>
-                    <li class="list-group-item">Item Seven</li>
-                </ul>
-            </div>
-            <div class="bio-section mb-4">
-                <h3>User Biography</h3>
-                <textarea class="form-control" rows="5">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</textarea>
-            </div>
-            <div class="map-snapshot">
-                <h3>Interactive Dive Map Snapshot</h3>
-                <div style="height: 300px; background-color: #e0f7fa;">
-                    <!-- Placeholder for the interactive dive map snapshot -->
+<div class="profile-background">
+    <div class="profile-container">
+        <div class="user-container d-flex align-items-center justify-content-between">
+            <div class="row">
+                <!-- Profile Picture Section -->
+                <div class="col-md-3 text-center">
+                    <div class="profile-picture mb-4">
+                        <img src="{% static 'images/user_default.png' %}" class="rounded-circle img-fluid" alt="User chosen image/photo">
+                    </div>
                 </div>
-                <a href="{% url 'map' %}" class="btn btn-primary mt-3">Go to Interactive Map</a>
+                <!-- User Info Section -->
+                <div class="col-md-9">
+                    <h1 class="display-4">User's Name</h1>
+                    <p class="lead">Country of origin</p>
+                    <div class="row">
+                        <!-- Dive Info List -->
+                        <div class="col-md-4">
+                            <ul class="list-group">
+                                <li class="list-group-item">Item One</li>
+                                <li class="list-group-item">Item Two</li>
+                                <li class="list-group-item">Item Three</li>
+                                <li class="list-group-item">Item Four</li>
+                                <li class="list-group-item">Item Five</li>
+                                <li class="list-group-item">Item Six</li>
+                                <li class="list-group-item">Item Seven</li>
+                            </ul>
+                        </div>
+                        <!-- Biography Section -->
+                        <div class="col-md-8">
+                            <h3>User Biography</h3>
+                            <textarea class="form-control" rows="5">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</textarea>
+                        </div>
+                    </div>
+                    <!-- Interactive Map Snapshot -->
+                    <div class="map-snapshot mt-4">
+                        <h3>Interactive Dive Map Snapshot</h3>
+                        <div style="height: 300px; background-color: #e0f7fa;">
+                            <!-- Placeholder for the interactive dive map snapshot -->
+                        </div>
+                        <a href="{% url 'map' %}" class="btn btn-primary mt-3">Go to Interactive Map</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+

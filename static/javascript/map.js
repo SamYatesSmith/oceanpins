@@ -22,7 +22,6 @@ function initMap() {
             showDiveForm();
         });
 
-        // Prevent the default double-click zoom behavior
         map.addListener('dblclick', (event) => {
             event.stop();
         });
@@ -47,6 +46,12 @@ function addMarker(location) {
 
     marker.addListener('click', () => {
         updateDiveFormLocation(location);
+    });
+
+    // Right-click listener to remove the marker
+    marker.addListener('rightclick', () => {
+        console.log('Marker right-clicked');
+        marker.setMap(null);
     });
 }
 
@@ -114,6 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add a click listener to the marker to show dive details
         marker.addListener('click', () => {
             showDiveCard(diveLog);
+        });
+        marker.addListener('rightclick', () => {
+            marker.setMap(null);  // Remove the marker from the map
         });
         // Send the dive log data to the server
         fetch('/dives/addDive/', {
