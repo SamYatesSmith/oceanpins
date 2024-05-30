@@ -388,7 +388,7 @@ form button:hover {
     top: var(--header-height);
     left: 0;
     right: 0;
-    margin-bottom: var(--footer-height);
+    bottom: 90px !important;
     box-sizing: border-box;
     display: flex;
     flex: 1;
@@ -433,12 +433,38 @@ form button:hover {
     display: flex;
 }
 
+.guide-container {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    margin: 25px 0;
+    height: auto;
+}
+
+.guide-container h4 {
+    font-family: 'Josefin Sans', sans-serif;
+    color: white;
+}
+
+.guide-container ol {
+    padding-left: 20px;
+}
+
+.guide-container ol li {
+    margin-bottom: 10px;
+    color: white
+}
+
+
 #map {
-    margin: 25px;
+    margin: 15px;
     background-color: #e0f7fa;
     border-radius: 8px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
-    border: 6px solid #D4AF37;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+    border: 2px solid #D4AF37;
+    flex: 1;
+    height: auto;
+    width: 85%;
 }
 
 .map-tools {
@@ -447,6 +473,7 @@ form button:hover {
     box-sizing: border-box;
     font-family: 'Josefin Sans', sans-serif;
     font-size: 1rem;
+    height: auto;
 }
 
 .map-tools h5 {
