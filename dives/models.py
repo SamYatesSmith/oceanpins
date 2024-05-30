@@ -17,6 +17,7 @@ class Dive(models.Model):
         return f"{self.location} - {self.date}"
 
 class DiveLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)

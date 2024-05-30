@@ -19,7 +19,7 @@ function initMap() {
             event.stop();
             addMarker(event.latLng);
             updateDiveFormLocation(event.latLng);
-            showDiveForm();
+            rotateForm();
         });
 
         map.addListener('dblclick', (event) => {
@@ -32,12 +32,34 @@ function initMap() {
             google.maps.event.trigger(map, 'resize');
             map.setCenter(center);
         });
+
+        // Initialize the search box
+        initAutocomplete();
     } else {
         console.error('Map div not found!');
     }
 }
 
-// Function to add a marker on the map using AdvancedMarkerElement
+const initAutocomplete = () => {
+    const input = document.getElementById('map-search');
+    const autocomplete = new google.maps.places.Autocomplete(input);
+
+    autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if(!place.geometry) {
+            return console.error("No details available for the input '" + place.name + "'");
+        }
+
+        map.setCenter(place.geometry.location);
+        map.setZoom(10);
+
+        addMarker(place.geometry.location);
+        updateDiveFormLocation(place.geometry.location);
+        rotateForm();
+    });
+};
+
+// Function to add a marker on the map
 function addMarker(location) {
     const marker = new google.maps.Marker({
         position: location,
@@ -50,9 +72,14 @@ function addMarker(location) {
 
     // Right-click listener to remove the marker
     marker.addListener('rightclick', () => {
-        console.log('Marker right-clicked');
         marker.setMap(null);
+        clearDiveFormLocation();
     });
+}
+
+function clearDiveFormLocation() {
+    console.log('Clearing dive location field');
+    document.getElementById('diveLocation').value = '';
 }
 
 // Function to update the dive form location field
@@ -61,14 +88,19 @@ function updateDiveFormLocation(location) {
     document.getElementById('diveLocation').value = latLngStr;
 }
 
-// Function to show the dive form
-function showDiveForm() {
-    document.getElementById('addDiveForm').style.display = 'block';
+// Function to rotate and show the dive form
+function rotateForm() {
+    const initialImage = document.getElementById('initialImage');
+    const addDiveForm = document.getElementById('addDiveForm');
+
+    initialImage.style.display = 'none';
+    addDiveForm.style.display = 'block';
 }
 
-// Function to hide the dive form
+// Function to hide the dive form and show a random image
 function hideDiveForm() {
     document.getElementById('addDiveForm').style.display = 'none';
+    showRandomImage();
 }
 
 // Function to show the confirmation message
@@ -84,6 +116,27 @@ function showConfirmationMessage() {
     } else {
         console.error("Confirmation message element not found.");
     }
+}
+
+// Function to show a random image
+function showRandomImage() {
+    const randomImage = document.getElementById('randomImage');
+    const images = [
+        'static/images/coral2.jpg',
+        'static/images/dolphins.jpg',
+        // 'static/images/image3.jpg',
+        // 'static/images/image4.jpg',
+        // 'static/images/image5.jpg',
+        // 'static/images/image6.jpg',
+        // 'static/images/image7.jpg',
+        // 'static/images/image8.jpg',
+        // 'static/images/image9.jpg',
+        // 'static/images/image10.jpg'
+    ];
+
+    const randomIndex = Math.floor(Math.random() * images.length);
+    randomImage.src = images[randomIndex];
+    randomImage.style.display = 'block';
 }
 
 // Ensure DOM content is loaded before adding event listeners
@@ -120,9 +173,12 @@ document.addEventListener('DOMContentLoaded', () => {
         marker.addListener('click', () => {
             showDiveCard(diveLog);
         });
+
         marker.addListener('rightclick', () => {
-            marker.setMap(null);  // Remove the marker from the map
+            marker.setMap(null);
+            clearDiveFormLocation();
         });
+
         // Send the dive log data to the server
         fetch('/dives/addDive/', {
             method: 'POST',
@@ -166,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to load Google Maps API
     function loadGoogleMapsApi() {
         const script = document.createElement('script');
-        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&callback=initMap';
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&libraries=places&callback=initMap';
         script.async = true;
         script.defer = true;
         script.setAttribute('loading', 'async');  // Adding loading=async attribute

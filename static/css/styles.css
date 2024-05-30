@@ -23,6 +23,13 @@
     letter-spacing: 0.4em;
 }
 
+/* Buttons */
+
+.btn-primary {
+    background-color: #D4AF37;
+    border-color:#0a4877;
+}
+
 /* Page backdrops */
 
 /* Base.html styles */
@@ -38,31 +45,38 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    margin: 0;
     background-color: #f4f4f4;
     overflow: hidden;
 }
 
 .header-overlay, .footer-overlay {
-    position: fixed;
     left: 0;
     right: 0;
     z-index: 1000;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(19, 17, 17, 0.3);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .header-overlay {
+    position: fixed;
     top: 0;
     height: var(--header-height);
 }
 
 .footer-overlay {
+    position: absolute;
     bottom: 0;
+    left: 0;
+    right: 0;
     height: var(--footer-height);
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
     justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 0 5%;
 }
 
 .header-overlay, .footer-overlay .container {
@@ -155,7 +169,7 @@ body {
 }
 
 .hero .hero-button {
-    margin-right: 15%;
+    margin-right: 7.5%;
 }
 
 @keyframes wave-animation {
@@ -279,7 +293,7 @@ body {
 
 .hero .hero-text h1,
 .hero .hero-text p {
-    color: #fff;
+    color: #D4AF37;
 }
 
 .social-media a {
@@ -288,7 +302,7 @@ body {
 }
 
 .social-media a:hover {
-    color: #d63384;
+    color: #D4AF37
 }
 
 footer .social-media a {
@@ -304,7 +318,6 @@ form {
     max-height: 500px;
     margin: 1.5rem auto;
     padding: 1.5rem;
-    background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
     overflow-y: auto;
@@ -334,7 +347,7 @@ form button {
 }
 
 form button:hover {
-    background-color: #004d40;
+    background-color: #0a4877;
 }
 
 .login-background {
@@ -377,10 +390,11 @@ form button:hover {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    position: fixed;
+    position: relative;
     width: 100%;
     height: 100vh;
+    min-height: calc(100vh - var(--header-height) - var(--footer-height));
+    box-sizing: border-box;
 }
 
 .map-container {
@@ -388,7 +402,8 @@ form button:hover {
     top: var(--header-height);
     left: 0;
     right: 0;
-    bottom: 90px !important;
+    padding-bottom: var(--footer-height);
+    margin-bottom: 95px;
     box-sizing: border-box;
     display: flex;
     flex: 1;
@@ -396,37 +411,51 @@ form button:hover {
 
 .heading-container {
     font-family: 'Josefin Sans', sans-serif;
-    font-size: 1.5rem;
     padding-top: 5px;
-    color: white;
-}
-
-.heading-container .mapSubHead {
-    font-family: 'Josefin Sans', sans-serif;
-    font-size: 1rem;
-    color: #5F5C6D;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 5px;
-    margin-left: 20px;
-    border-radius: 5px;
-    color: #fff;
-    width: 95%;
+    text-align: left;
 }
 
 .heading-container h1 {
-    padding-left: 15px;
-    font-size: 50px;
+    color: #D4AF37;
+    font-size: 75px;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+    border-radius: 8px;
+    padding-left: 5px;
+    margin: 0;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.heading-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.7), rgba(0, 123, 255, 0.3)); /* Gradient overlay */
+    border-radius: 8px;
+    z-index: -1;
 }
 
 .heading-container.text-left {
     text-align: left;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 .heading-container.full-width {
+    height: auto;
     border-radius: 5px;
     width: 100%;
-    margin-top: 63px;
+    margin-top: 40px;
     color: white;
+}
+
+.head-row {
+    height: 90px;
 }
 
 .row {
@@ -437,7 +466,7 @@ form button:hover {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    margin: 25px 0;
+    margin-top: 25px;
     height: auto;
 }
 
@@ -447,7 +476,9 @@ form button:hover {
 }
 
 .guide-container ol {
-    padding-left: 20px;
+    padding-left: 10px;
+    font-size: 14px;
+    margin-bottom: 45px;
 }
 
 .guide-container ol li {
@@ -457,14 +488,18 @@ form button:hover {
 
 
 #map {
-    margin: 15px;
+    margin: 25px -7.5px;
     background-color: #e0f7fa;
     border-radius: 8px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
     border: 2px solid #D4AF37;
     flex: 1;
     height: auto;
     width: 85%;
+}
+
+.addDiveForm {
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
 .map-tools {
@@ -479,10 +514,6 @@ form button:hover {
 .map-tools h5 {
     color: white;
     margin-left: 8px;
-}
-
-.btn-primary {
-    background-color: #D4AF37;
 }
 
 body > .container-fluid {

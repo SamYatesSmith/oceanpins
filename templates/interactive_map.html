@@ -7,13 +7,18 @@
 <div class="map-background">
     <div class="map-container">
         <div class="container-fluid main">
-            <div class="row">
-                <div class="col-md-9">
+            <div class="row head-row">
+                <div class="col-md-6">
                     <div class="heading-container text-left">
                         <h1>Your Dive Map</h1>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3 d-flex align-items-center justify-content-center">
+                    <div class="form-group w-100 mb-0">
+                        <input id="map-search" class="form-control" type="text" placeholder="Search for a location">
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex align-items-center justify-content-center">
                     <div class="heading-container text-center mb-3 full-width">
                         <h5>Add your Dive details here</h5>
                     </div>
@@ -25,9 +30,11 @@
                         <h4 class="guide-list-head">How to Use the Map:</h4>
                         <ol class="guide-list">
                             <li>Double click to add a pin.</li>
+                            <li>Right click on the added pin to remove it.</li>
                             <li>Fill out the form.</li>
                             <li>Save the dive details.</li>
-                            <li>Review your dives.</li>
+                            <li>Zoom in and out using mouse jogwheel, or buttons provided.</li>
+                            <li>Use search feature provided to quickly find your dive area.</li>
                         </ol>
                     </div>
                 </div>
@@ -38,10 +45,11 @@
                 </div>
                 <div class="col-md-3 d-flex flex-column">
                     <div class="map-tools">
+                        <img id="initialImage" src="{% static 'images/login.jpg' %}" class="img-fluid" alt="Initial Image">
                         <div id="confirmationMessage" class="confirmation-message" style="display: none;">
                             Your dive has been added to your profile map.
                         </div>
-                        <form id="addDiveForm">
+                        <form id="addDiveForm" style="display: none;">
                             <div class="form-group">
                                 <label for="diveDate">Date</label>
                                 <input type="date" class="form-control" id="diveDate" required>
@@ -76,6 +84,7 @@
                             </div>
                             <button type="submit" class="btn btn-primary">Save Dive</button>
                         </form>
+                        <img id="randomImage" src="" class="img-fluid" alt="Random Image" style="display: none;">
                     </div>
                 </div>
             </div>
