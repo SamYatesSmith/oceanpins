@@ -1,11 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import User
-
+from django.conf import settings
 
 # Create your models here.
 
 class Dive(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     location = models.CharField(max_length=255)
     date = models.DateField()
     depth = models.FloatField()
@@ -17,7 +16,7 @@ class Dive(models.Model):
         return f"{self.location} - {self.date}"
 
 class DiveLog(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True) # null = TEMPORARY.
     date = models.DateField()
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)

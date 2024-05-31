@@ -4,17 +4,16 @@ from django.contrib import messages
 from .forms import CustomUserCreationForm
 
 
-# Create your views here.
-
+# Views
 
 def register(request):
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, 'Success - Your account has been created.  Feel free to go ahead and log-in.')
-            return redirect('profiles/login')
+            return redirect('login')
     else:
         form = CustomUserCreationForm()
     return render(request, 'profiles/register.html', {'form': form})
