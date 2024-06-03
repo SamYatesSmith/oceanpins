@@ -3,8 +3,6 @@ from .models import Dive, DiveLog
 
 
 # Register your models here.
-
-
 @admin.register(Dive)
 class DiveAdmin(admin.ModelAdmin):
     list_display = ('user', 'location', 'date', 'depth')

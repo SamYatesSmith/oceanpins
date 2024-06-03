@@ -10,8 +10,13 @@
             <h1 class="display-4 wavy-text">Ocean Pins</h1>
             <p class="lead">Connect with the global diving community and share your experiences</p>
         </div>
-        <div class="hero-button">
-            <a href="{% url 'login' %}" class="btn btn-lg btn-wide">LOGIN</a>
+        <div class="hero-buttons d-flex flex-column">
+            <div class="hero-button mb-5">
+                <a href="{% url 'login' %}" class="btn btn-lg btn-wide">LOGIN</a>
+            </div>
+            <div class="hero-button">
+                <a href="{% url 'register' %}" class="btn btn-lg btn-wide">SIGN-UP</a>
+            </div>
         </div>
     </div>
 </div>

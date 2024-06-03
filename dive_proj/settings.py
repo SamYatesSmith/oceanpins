@@ -133,6 +133,13 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Cloudinary settings
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('dt6dg1u1o'),
+    'API_KEY': os.getenv('149872526841283'),
+    'API_SECRET': os.getenv('5eJ5RBTpugjHOBaC7Ywirr7HRdE')
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/

@@ -112,6 +112,7 @@ function showConfirmationMessage() {
         messageContainer.style.display = 'block';
         setTimeout(() => {
             messageContainer.style.display = 'none';
+            showRandomImage();
         }, 5000);
     } else {
         console.error("Confirmation message element not found.");
@@ -124,9 +125,9 @@ function showRandomImage() {
     const images = [
         'static/images/coral2.jpg',
         'static/images/dolphins.jpg',
-        // 'static/images/image3.jpg',
-        // 'static/images/image4.jpg',
-        // 'static/images/image5.jpg',
+        'static/images/hero.jpg',
+        'static/images/openwater.jpg',
+        'static/images/underwater1.jpg',
         // 'static/images/image6.jpg',
         // 'static/images/image7.jpg',
         // 'static/images/image8.jpg',
@@ -225,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&libraries=places&callback=initMap';
         script.async = true;
         script.defer = true;
-        script.setAttribute('loading', 'async');  // Adding loading=async attribute
+        script.setAttribute('loading', 'async');
         document.head.appendChild(script);
     }
 
