@@ -4,41 +4,86 @@
 {% block title %}Profile{% endblock %}
 
 {% block content %}
-<div class="profile-background">
+<div class="profile-background"></div>
     <div class="profile-container">
+        <div class="profile-heading-fluid col-5">
+            <div class="profile-row">
+                <h1 class="profile-heading text-left">Your Dive Profile</h1>
+            </div>
+        </div>
         <div class="user-container d-flex align-items-center justify-content-between">
-            <div class="row">
+            <div class="row w-100">
                 <!-- Profile Picture Section -->
-                <div class="col-md-3 text-center">
-                    <div class="profile-picture mb-4">
-                        <img src="{% static 'images/user_default.png' %}" class="rounded-circle img-fluid" alt="User chosen image/photo">
+                <div class="col-md-4 text-center w-100">
+                    <div class="mb-4">
+                        <div class="profile-picture">
+                            <img src="{% static 'images/user_default.png' %}" class="rounded-circle img-fluid" alt="User chosen image/photo">
+                        </div>
+                        <div class="user-name mb-4">
+                            <h1 class="display-4 w-100">User Name</h1>
+                            <p class="display-4-sub-head">Country of origin</p>
+                        </div>
                     </div>
                 </div>
                 <!-- User Info Section -->
-                <div class="col-md-9">
-                    <h1 class="display-4">User's Name</h1>
-                    <p class="lead">Country of origin</p>
-                    <div class="row">
+                <div class="col-md-8 w-100">
+                    <div class="profile-row w-100">
                         <!-- Dive Info List -->
-                        <div class="col-md-4">
-                            <ul class="list-group">
-                                <li class="list-group-item">Item One</li>
-                                <li class="list-group-item">Item Two</li>
-                                <li class="list-group-item">Item Three</li>
-                                <li class="list-group-item">Item Four</li>
-                                <li class="list-group-item">Item Five</li>
-                                <li class="list-group-item">Item Six</li>
-                                <li class="list-group-item">Item Seven</li>
-                            </ul>
+                        <div class="dive-exp mt-5">
+                            <div class="col-md-12 user-info no-padding w-100">
+                                <div class="d-flex w-100">
+                                    <ul class="list-group w-50">
+                                        <li class="list-group-item">
+                                            <label for="buddyName">My buddy is:</label>
+                                            <input type="text" id="buddyName" class="form-control" placeholder="Enter your buddy's name">
+                                        </li>
+                                        <li class="list-group-item">
+                                            <label for="diveCount">Number of Dives so far:</label>
+                                            <input type="number" id="diveCount" class="form-control" placeholder="Enter number of dives">
+                                        </li>
+                                        <li class="list-group-item">
+                                            <label for="diveSchool">Dive School?</label>
+                                            <select id="diveSchool" class="form-control">
+                                                <option value="PADI">PADI</option>
+                                                <option value="SSI">SSI</option>
+                                            </select>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <label for="diveCertLevel">Dive certificate Level:</label>
+                                            <input type="text" id="diveCertLevel" class="form-control" placeholder="Enter certificate level">
+                                        </li>
+                                    </ul>
+                                    <ul class="list-group w-50">
+                                        <li class="list-group-item">
+                                            <label for="favDiveSite">Favourite Dive Site?</label>
+                                            <input type="text" id="favDiveSite" class="form-control" placeholder="Enter favourite dive site">
+                                        </li>
+                                        <li class="list-group-item">
+                                            <label for="nextDiveTrip">Next planned dive trip:</label>
+                                            <input type="date" id="nextDiveTrip" class="form-control">
+                                        </li>
+                                        <li class="list-group-item">
+                                            <label for="nextDiveLocation">Next Dive Trip location:</label>
+                                            <input type="text" id="nextDiveLocation" class="form-control" placeholder="Enter next dive trip location">
+                                        </li>
+                                        <li class="list-group-item">
+                                            <label for="trainingLocation">Where did you train?</label>
+                                            <input type="text" id="trainingLocation" class="form-control" placeholder="Enter training location">
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                         <!-- Biography Section -->
-                        <div class="col-md-8">
-                            <h3>User Biography</h3>
-                            <textarea class="form-control" rows="5">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</textarea>
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <h3>User Biography</h3>
+                                <textarea class="form-control" rows="5">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</textarea>
+                            </div>
                         </div>
                     </div>
                     <!-- Interactive Map Snapshot -->
-                    <div class="map-snapshot mt-4">
+                    <div class="map-snapshot mt-4 w-100">
                         <h3>Interactive Dive Map Snapshot</h3>
                         <div style="height: 300px; background-color: #e0f7fa;">
                             <!-- Placeholder for the interactive dive map snapshot -->
@@ -49,6 +94,5 @@
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
 
