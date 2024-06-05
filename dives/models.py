@@ -28,3 +28,18 @@ class DiveLog(models.Model):
 
     def __str__(self):
         return self.name
+
+print("Loading Marker model...")  # Debug statement
+
+from django.db import models
+from django.conf import settings
+
+class Marker(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    lat = models.FloatField()
+    lng = models.FloatField()
+
+    def __str__(self):
+        return f"Marker at {self.lat}, {self.lng}"
+
+print("Marker model loaded.")  # Debug statement

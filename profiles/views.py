@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from .forms import CustomUserCreationForm
@@ -17,4 +18,8 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'profiles/register.html', {'form': form})
+
+@login_required
+def profile(request):
+    return render(request, 'profile.html')
     

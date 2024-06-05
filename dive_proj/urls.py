@@ -17,17 +17,16 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import TemplateView
-from dives import views as dive_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
-    path('interactive_map.html/', TemplateView.as_view(template_name='interactive_map.html'), name='map'),
-    path('login/', TemplateView.as_view(template_name='profiles/login.html'), name='login'),
-    path('logout/', dive_views.LogoutView.as_view(), name='logout'),
+    path('interactive_map/', TemplateView.as_view(template_name='interactive_map.html'), name='map'),
+    path('login/', LoginView.as_view(template_name='profiles/login.html'), name='login'),
+    path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
     path('register/', include('profiles.urls')),
-    path('signup/', TemplateView.as_view(template_name='profiles/signup.html'), name='signup'),
-    path('profile/', TemplateView.as_view(template_name='profiles/profile.html'), name='profile'),
-    path('login_signup_choice/', TemplateView.as_view(template_name='profiles/login_signup_choice.html'), name='login_signup_choice'),
+    path('profiles/', include('profiles.urls')),
     path('dives/', include('dives.urls')),
+    path('signup/', TemplateView.as_view(template_name='profiles/signup.html'), name='signup'),
+    path('login_signup_choice/', TemplateView.as_view(template_name='profiles/login_signup_choice.html'), name='login_signup_choice'),
 ]

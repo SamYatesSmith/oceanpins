@@ -50,6 +50,7 @@
                             Your dive has been added to your profile map.
                         </div>
                         <form id="addDiveForm" style="display: none;">
+                            {% csrf_token %}
                             <div class="form-group">
                                 <label for="diveDate">Date</label>
                                 <input type="date" class="form-control" id="diveDate" required>
@@ -117,5 +118,35 @@
         </div>
     </div>
 </div>
+<script>
+    let diveLogs = [];
+    let markers = [];
+    const rawDiveLogs = '{{ dive_logs|escapejs }}';
+    const rawMarkers = '{{ markers|escapejs }}';
+    console.log("Raw dive_logs JSON data:", rawDiveLogs);
+    console.log("Raw markers JSON data:", rawMarkers);
+
+    if (rawDiveLogs && rawDiveLogs !== '[]') {
+        try {
+            diveLogs = JSON.parse(rawDiveLogs);
+            console.log("Parsed dive logs:", diveLogs); // Debug statement to confirm parsing
+        } catch (e) {
+            console.error('Error parsing dive_logs:', e);
+        }
+    } else {
+        console.warn('No dive_logs data provided');
+    }
+
+    if (rawMarkers && rawMarkers !== '[]') {
+        try {
+            markers = JSON.parse(rawMarkers);
+            console.log("Parsed markers:", markers); // Debug statement to confirm parsing
+        } catch (e) {
+            console.error('Error parsing markers:', e);
+        }
+    } else {
+        console.warn('No markers data provided');
+    }
+</script>
 <script src="{% static 'javascript/map.js' %}"></script>
 {% endblock %}
