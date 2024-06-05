@@ -140,8 +140,29 @@ function showRandomImage() {
     randomImage.style.display = 'block';
 }
 
-// Ensure DOM content is loaded before adding event listeners
+// DOM content is loaded before adding event listeners
 document.addEventListener('DOMContentLoaded', () => {
+        // Fetch the most common buddy and set it as the input value
+        fetch('/dives/most_common_buddy/')
+        .then(response => {
+            console.log('Fetching most common buddy...');
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const buddyInput = document.getElementById('buddyName');
+            console.log('Most common buddy data received:', data); // Debugging output
+            if (data.most_common_buddy) {
+                buddyInput.value = data.most_common_buddy;
+                console.log('Buddy name set to:', data.most_common_buddy); // Debugging output
+            } else {
+                console.log('No buddy name found'); // Debugging output
+            }
+        })
+        .catch(error => console.error('Error fetching most common buddy:', error));
+
     document.getElementById('addDiveForm').addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -150,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
             date: document.getElementById('diveDate').value,
             name: document.getElementById('diveName').value,
             location: document.getElementById('diveLocation').value,
-            buddy: document.getElementById('diveBuddy').value,
+            buddy: document.getElementById('buddyName').value,
             depth: document.getElementById('diveDepth').value,
             temp: document.getElementById('waterTemp').value,
             visibility: document.getElementById('visibility').value,

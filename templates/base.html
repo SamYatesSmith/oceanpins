@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Syncopate:wght@400;700&family=Lobster&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -18,7 +18,7 @@
     <header class="header-overlay">
         <div class="container-fluid">
             <div class="row w-100 align-items-center">
-                <div class="col d-flex align-items-center justify-content-start logo-container">
+                <div class="col d-flex logo-container">
                     <a href="{% url 'home' %}" class="text-white text-decoration-none"></a>
                     <img src="{% static 'images/logo1.png' %}" alt="Ocean Pins Logo" class="logo-img">
                 </div>
@@ -32,8 +32,14 @@
                     </nav>
                 </div>
                 <div class="col d-flex align-items-center justify-content-end login-container">
-                    <a href="{% url 'login_signup_choice' %}" class="nav-link text-white">Login/Sign Up</a>
+                    {% if user.is_authenticated %}
+                        <span class="nav-link text-white">Logged In</span>
+                        <a href="{% url 'logout' %}" class="nav-link text-white">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login_signup_choice' %}" class="nav-link text-white">Login/Sign Up</a>
+                    {% endif %}
                 </div>
+
             </div>
         </div>
     </header>

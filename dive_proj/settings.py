@@ -133,12 +133,17 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOGIN_URL = 'login'
+
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+
 # Cloudinary settings
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv('dt6dg1u1o'),
-    'API_KEY': os.getenv('149872526841283'),
-    'API_SECRET': os.getenv('5eJ5RBTpugjHOBaC7Ywirr7HRdE')
+    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': env('CLOUDINARY_API_KEY'),
+    'API_SECRET': env('CLOUDINARY_API_SECRET')
 }
 
 # Static files (CSS, JavaScript, Images)
