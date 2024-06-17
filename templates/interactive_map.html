@@ -118,35 +118,9 @@
         </div>
     </div>
 </div>
-<script>
-    let diveLogs = [];
-    let markers = [];
-    const rawDiveLogs = '{{ dive_logs|escapejs }}';
-    const rawMarkers = '{{ markers|escapejs }}';
-    console.log("Raw dive_logs JSON data:", rawDiveLogs);
-    console.log("Raw markers JSON data:", rawMarkers);
-
-    if (rawDiveLogs && rawDiveLogs !== '[]') {
-        try {
-            diveLogs = JSON.parse(rawDiveLogs);
-            console.log("Parsed dive logs:", diveLogs); // Debug statement to confirm parsing
-        } catch (e) {
-            console.error('Error parsing dive_logs:', e);
-        }
-    } else {
-        console.warn('No dive_logs data provided');
-    }
-
-    if (rawMarkers && rawMarkers !== '[]') {
-        try {
-            markers = JSON.parse(rawMarkers);
-            console.log("Parsed markers:", markers); // Debug statement to confirm parsing
-        } catch (e) {
-            console.error('Error parsing markers:', e);
-        }
-    } else {
-        console.warn('No markers data provided');
-    }
-</script>
+<div id="rawDiveLogs" style="display: none;">{{ dive_logs|safe }}</div>
+<div id="rawMarkers" style="display: none;">{{ markers|safe }}</div>
+<input type="hidden" id="userId" value="{{ user.id }}">
+<script src="https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js"></script>
 <script src="{% static 'javascript/map.js' %}"></script>
 {% endblock %}

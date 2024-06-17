@@ -11,9 +11,14 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.decorators.http import require_POST
+from django.db import connection
 
-# Create your views here.
 User = get_user_model()
+
+CACHE = {
+    'markers': [],
+    'dive_logs': []
+}
 
 @csrf_exempt
 def add_dive_log(request):
@@ -28,16 +33,33 @@ def add_dive_log(request):
                 depth=data['depth'],
                 temp=data['temp'],
                 visibility=data['visibility'],
-                bottom_time=data['bottomTime']
+                bottom_time=data['bottomTime'],
+                user=request.user
             )
             dive_log.save()
+            CACHE['dive_logs'].append({
+                'date': data['date'],
+                'name': data['name'],
+                'location': data['location'],
+                'buddy': data['buddy'],
+                'depth': data['depth'],
+                'temp': data['temp'],
+                'visibility': data['visibility'],
+                'bottom_time': data['bottomTime'],
+                'user_id': request.user.id
+            })
             return JsonResponse({'status': 'success'})
         except KeyError as e:
             return JsonResponse({'status': 'error', 'message': f'Missing key: {str(e)}'}, status=400)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+        finally:
+            if connection.connection:
+                connection.close()
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
+        
 @csrf_exempt
 def add_dive(request):
     if request.method == 'POST':
@@ -59,6 +81,9 @@ def add_dive(request):
             return JsonResponse({'status': 'error', 'message': f'Missing key: {str(e)}'}, status=400)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+        finally:
+            if connection.connection:
+                connection.close()
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
 @login_required
@@ -67,30 +92,38 @@ def home(request):
 
 @login_required
 def interactive_map(request):
-    dive_logs = list(DiveLog.objects.filter(user=request.user).values())
-    markers = list(Marker.objects.filter(user=request.user).values('lat', 'lng'))
-    dive_logs_json = json.dumps(dive_logs, cls=DjangoJSONEncoder)
-    markers_json = json.dumps(markers, cls=DjangoJSONEncoder)
-    print("Serialized dive_logs:", dive_logs_json)  # Debug statement to check JSON data
-    print("Serialized markers:", markers_json)  # Debug statement to check JSON data
-    return render(request, 'interactive_map.html', {'dive_logs': dive_logs_json, 'markers': markers_json})
+    # Fetch markers and dive logs from the database if not already in the cache
+    if not CACHE['markers']:
+        markers = Marker.objects.all().values('lat', 'lng', 'user_id')
+        CACHE['markers'] = list(markers)
+    
+    if not CACHE['dive_logs']:
+        dive_logs = DiveLog.objects.all().values('date', 'name', 'location', 'buddy', 'depth', 'temp', 'visibility', 'bottom_time', 'user_id')
+        CACHE['dive_logs'] = list(dive_logs)
+
+    markers_json = json.dumps(CACHE['markers'], cls=DjangoJSONEncoder)
+    dive_logs_json = json.dumps(CACHE['dive_logs'], cls=DjangoJSONEncoder)
+
+    return render(request, 'interactive_map.html', {
+        'markers': markers_json,
+        'dive_logs': dive_logs_json
+    })
 
 @require_POST
 @login_required
 @csrf_exempt
 def add_marker(request):
-    print("add_marker function called")  # Debug statement
     try:
         data = json.loads(request.body)
-        print(f"Data received for adding marker: {data}")  # Debug statement
-        Marker.objects.create(lat=data['lat'], lng=data['lng'], user=request.user)
-        print("Marker created successfully")  # Debug statement
+        marker = {'lat': data['lat'], 'lng': data['lng'], 'user': request.user.id}
+
+        if marker not in CACHE['markers']:
+            CACHE['markers'].append(marker)
+            Marker.objects.create(lat=data['lat'], lng=data['lng'], user=request.user)
+
         return JsonResponse({'status': 'success'})
     except Exception as e:
-        print(f"Error in add_marker: {e}")  # Debug statement
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
-
 
 def view_dive_logs(request):
     dive_logs = DiveLog.objects.all()

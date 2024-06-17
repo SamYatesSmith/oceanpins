@@ -2,22 +2,53 @@
 
 // Global variable for the map
 let map;
+let diveLogs = [];
+let markers = [];
+let markersArray = [];
+let userId = document.getElementById('userId').value || null; // Read user ID from the hidden input field
 
-        // Function to get the CSRF token
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
+// Function to get the CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
-            return cookieValue;
         }
+    }
+    return cookieValue;
+}
+
+// Function to debounce multiple rapid calls to a function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Function to get data from the cache or fetch from the server
+function getDataFromCache(key) {
+    const cachedData = localStorage.getItem(key);
+    if (cachedData) {
+        return JSON.parse(cachedData);
+    }
+    return [];
+}
+
+// Function to save data to the cache
+function saveDataToCache(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+}
 
 // Initialize the map and add a click listener
 function initMap() {
@@ -29,20 +60,12 @@ function initMap() {
             mapTypeId: google.maps.MapTypeId.HYBRID,
             streetViewControl: false
         });
-
-        // Add a double-click listener to the map
-        map.addListener('dblclick', (event) => {
+        map.addListener('dblclick', debounce((event) => {
             event.stop();
             addMarker(event.latLng);
             updateDiveFormLocation(event.latLng);
             rotateForm();
-        });
-
-        map.addListener('dblclick', (event) => {
-            event.stop();
-        });
-
-        // Ensure the map resizes correctly
+        }, 300));
         window.addEventListener('resize', () => {
             const center = map.getCenter();
             google.maps.event.trigger(map, 'resize');
@@ -51,8 +74,7 @@ function initMap() {
 
         // Initialize the search box
         initAutocomplete();
-        renderDiveLogs();
-        renderMarkers();
+        initializeData();
     } else {
         console.error('Map div not found!');
     }
@@ -64,7 +86,7 @@ const initAutocomplete = () => {
 
     autocomplete.addListener('place_changed', () => {
         const place = autocomplete.getPlace();
-        if(!place.geometry) {
+        if (!place.geometry) {
             return console.error("No details available for the input '" + place.name + "'");
         }
 
@@ -76,17 +98,6 @@ const initAutocomplete = () => {
         rotateForm();
     });
 };
-
-// Render existing markers
-function renderMarkers() {
-    if (Array.isArray(markers) && markers.length) {
-        markers.forEach(marker => {
-            addMarker(new google.maps.LatLng(marker.lat, marker.lng));
-        });
-    } else {
-        console.warn('No markers found or markers is not an array');
-    }
-}
 
 // Function to add a marker on the map
 function addMarker(location) {
@@ -101,24 +112,28 @@ function addMarker(location) {
         marker.setMap(null);
         clearDiveFormLocation();
     });
-
+    markersArray.push(marker);
+    console.log('Marker added:', marker);
+    console.log('Markers Array:', markersArray);
+    updateMarkerCluster();
     saveMarker(location);
 }
 
+
+// Debounced function for saving markers
+const debouncedSaveMarkerRequest = debounce(saveMarker, 500);
+
 function saveMarker(location) {
-    console.log('Saving marker at:', location.lat(), location.lng()); // Debug statement
-    fetch('/dives/add_marker/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({ lat: location.lat(), lng: location.lng() }),
-    }).then(response => response.json()).then(data => {
-        console.log('Marker saved:', data);
-    }).catch((error) => {
-        console.error('Error:', error);
-    });
+    console.log('Saving marker at:', location.lat(), location.lng());
+
+    // Check if the marker already exists in the cache
+    const marker = { lat: location.lat(), lng: location.lng(), user: userId };
+    if (!markers.some(m => m.lat === marker.lat && m.lng === marker.lng && m.user === marker.user)) {
+        markers.push(marker);
+        saveDataToCache('markers', markers);
+
+        debouncedSaveMarkerToServer(location);
+    }
 }
 
 function clearDiveFormLocation() {
@@ -148,8 +163,8 @@ function rotateForm() {
     const addDiveForm = document.getElementById('addDiveForm');
 
     if (initialImage && addDiveForm) {
-    initialImage.style.display = 'none';
-    addDiveForm.style.display = 'block';
+        initialImage.style.display = 'none';
+        addDiveForm.style.display = 'block';
     } else {
         console.error('initialImage or addDiveForm element not found');
     }
@@ -186,11 +201,11 @@ function showConfirmationMessage() {
 function showRandomImage() {
     const randomImage = document.getElementById('randomImage');
     const images = [
-        'images/coral2.jpg',
-        'images/dolphins.jpg',
-        'images/hero.jpg',
-        'images/openwater.jpg',
-        'images/underwater1.jpg',
+        '/static/images/coral2.jpg',
+        '/static/images/dolphins.jpg',
+        '/static/images/hero.jpg',
+        '/static/images/openwater.jpg',
+        '/static/images/underwater1.jpg',
     ];
 
     if (randomImage) {
@@ -214,8 +229,170 @@ function renderDiveLogs() {
     }
 }
 
+function initializeData() {
+    // Fetch markers and dive logs from the cache
+    markers = getDataFromCache('markers') || [];
+    diveLogs = getDataFromCache('dive_logs') || [];
+
+    renderDiveLogs();
+    renderMarkers();
+}
+
+function renderMarkers() {
+    markersArray.forEach(marker => marker.setMap(null));
+    markersArray = [];
+
+    if (Array.isArray(markers) && markers.length) {
+        markers.forEach(markerData => {
+            const marker = new google.maps.Marker({
+                position: { lat: markerData.lat, lng: markerData.lng },
+                map: map,
+            });
+            marker.addListener('click', () => {
+                const latLng = new google.maps.LatLng(markerData.lat, markerData.lng);
+                updateDiveFormLocation(latLng);
+            });
+            marker.addListener('rightclick', () => {
+                marker.setMap(null);
+                clearDiveFormLocation();
+            });
+            markersArray.push(marker);
+        });
+        updateMarkerCluster();
+    } else {
+        console.warn('No markers found or markers is not an array');
+    }
+}
+
+function updateMarkerCluster() {
+    if (typeof MarkerClusterer !== 'undefined') {
+        if (map.markerClusterer) {
+            map.markerClusterer.clearMarkers();
+        }
+
+        console.log('Updating MarkerClusterer with markers:', markersArray);
+
+        map.markerClusterer = new MarkerClusterer({
+            markers: markersArray,
+            map: map,
+            // Use default algorithm and renderer
+            algorithm: {
+                maxZoom: 15,
+                gridSize: 60
+            },
+            renderer: {
+                render: ({ count }) => {
+                    return {
+                        element: createClusterElement(count),
+                        anchor: { x: 15, y: 15 }
+                    };
+                }
+            }
+        });
+    } else {
+        console.error('MarkerClusterer is not defined. Make sure the MarkerClusterer library is loaded.');
+    }
+}
+
+function createClusterElement(count) {
+    const div = document.createElement('div');
+    div.style.position = 'absolute';
+    div.style.width = '30px';
+    div.style.height = '30px';
+    div.style.background = 'rgba(0, 128, 0, 0.6)';
+    div.style.borderRadius = '50%';
+    div.style.display = 'flex';
+    div.style.alignItems = 'center';
+    div.style.justifyContent = 'center';
+    div.style.color = 'white';
+    div.style.fontSize = '14px';
+    div.style.fontWeight = 'bold';
+    div.textContent = count;
+    return div;
+}
+
+function saveDiveLog(diveLog) {
+    console.log('Saving dive log:', diveLog);
+
+    // Add the dive log to the cache
+    diveLogs.push(diveLog);
+    saveDataToCache('dive_logs', diveLogs);
+
+    // Send the dive log data to the server in batches
+    debouncedSaveDiveLog();
+}
+
+function debouncedSaveMarkerToServer(location) {
+    fetch('/dives/add_marker/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ lat: location.lat(), lng: location.lng() })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status !== 'success') {
+            throw new Error('Server error: ' + data.message);
+        }
+        console.log('Markers saved:', data);
+        markers = [];
+        saveDataToCache('markers', markers);
+    })
+    .catch(error => {
+        console.error('Error:', error.message);
+    });
+}
+
+function debouncedSaveDiveLog() {
+    fetch('/dives/add_dive_log/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(diveLogs)
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status !== 'success') {
+                throw new Error('Server error: ' + data.message);
+            }
+            console.log('Dive logs saved:', data);
+            diveLogs = [];
+            saveDataToCache('dive_logs', diveLogs);
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+        });
+}
+
 // DOM content is loaded before adding event listeners
 document.addEventListener('DOMContentLoaded', () => {
+    const rawMarkers = JSON.parse(document.getElementById('rawMarkers').textContent);
+    const rawDiveLogs = JSON.parse(document.getElementById('rawDiveLogs').textContent);
+
+    if (rawMarkers) {
+        markers = rawMarkers;
+    }
+
+    if (rawDiveLogs) {
+        diveLogs = rawDiveLogs;
+    }
+
+    initializeData();
+
     fetch('/dives/most_common_buddy/')
         .then(response => {
             console.log('Fetching most common buddy...');
@@ -238,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (addDiveForm) {
         addDiveForm.addEventListener('submit', function (e) {
             e.preventDefault();
-    
+
             const diveDate = document.getElementById('diveDate');
             const diveName = document.getElementById('diveName');
             const diveLocation = document.getElementById('diveLocation');
@@ -247,9 +424,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const waterTemp = document.getElementById('waterTemp');
             const visibility = document.getElementById('visibility');
             const bottomTime = document.getElementById('bottomTime');
-    
+
             if (diveDate && diveName && diveLocation && buddyName && diveDepth && waterTemp && visibility && bottomTime) {
-                // Create a dive log object from form inputs
                 const diveLog = {
                     date: diveDate.value,
                     name: diveName.value,
@@ -260,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     visibility: visibility.value,
                     bottomTime: bottomTime.value,
                 };
-                addDive(diveLog);
+                saveDiveLog(diveLog);
                 hideDiveForm();
                 showConfirmationMessage();
             } else {
@@ -268,79 +444,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     } else {
-            console.error('Add Dive form not found');
+        console.error('Add Dive form not found');
     }
+});
 
-    // Function to add a dive to the map and send data to the server
-    function addDive(diveLog) {
-        const [lat, lng] = diveLog.location.split(',').map(Number);
-        const marker = new google.maps.Marker({
-            position: { lat, lng },
-            map: map,
-            title: diveLog.name,
-        });
+function loadGoogleMapsApi() {
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&libraries=places&callback=initMap';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
 
-        // Add a click listener to the marker to show dive details
-        marker.addListener('click', () => {
-            showDiveCard(diveLog);
-        });
+    const markerClustererScript = document.createElement('script');
+    markerClustererScript.src = 'https://unpkg.com/@googlemaps/markerclusterer/dist/markerclustererplus.min.js';
+    markerClustererScript.async = true;
+    markerClustererScript.defer = true;
+    document.head.appendChild(markerClustererScript);
+}
 
-        marker.addListener('rightclick', () => {
-            marker.setMap(null);
-            clearDiveFormLocation();
-        });
-
-        // Send the dive log data to the server
-        fetch('/dives/addDive/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify(diveLog),
-        }).then(response => response.json()).then(data => {
-            console.log('Dive added:', data);
-        }).catch((error) => {
-            console.error('Error:', error);
-        });
-    }
-
-    // Function to display dive details in a modal
-    function showDiveCard(diveLog) {
-        document.getElementById('diveNameDetail').innerText = `Name: ${diveLog.name}`;
-        document.getElementById('diveLocationDetail').innerText = `Location: ${diveLog.location}`;
-        document.getElementById('diveDateDetail').innerText = `Date: ${diveLog.date}`;
-        document.getElementById('diveDepthDetail').innerText = `Depth: ${diveLog.depth} m`;
-        document.getElementById('diveBuddyDetail').innerText = `Buddy: ${diveLog.buddy}`;
-        document.getElementById('waterTempDetail').innerText = `Water Temp: ${diveLog.temp} °C`;
-        document.getElementById('visibilityDetail').innerText = `Visibility: ${diveLog.visibility} m`;
-        document.getElementById('bottomTimeDetail').innerText = `Bottom Time: ${diveLog.bottomTime} minutes`;
-
-        // Display dive images in the gallery
-        const diveGallery = document.getElementById('diveGallery');
-        diveGallery.innerHTML = '';
-        const imageUrls = diveLog.imageUrls || [];
-        imageUrls.forEach((url) => {
-            const img = document.createElement('img');
-            img.src = url;
-            img.classList.add('img-fluid');
-            diveGallery.appendChild(img);
-        });
-
-        // Show the modal with dive details
-        $('#diveCardModal').modal('show');
-    }
-
-    // Function to load Google Maps API
-    function loadGoogleMapsApi() {
-        const script = document.createElement('script');
-        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&libraries=places&callback=initMap';
-        script.async = true;
-        script.defer = true;
-        script.setAttribute('loading', 'async');
-        document.head.appendChild(script);
-    }
-
-    // Load the Google Maps API
-    loadGoogleMapsApi();
-})
+loadGoogleMapsApi();
