@@ -1,11 +1,9 @@
 from django.db import models
 from django.conf import settings
 
-# Create your models here.
-
 class Dive(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    location = models.CharField(max_length=255)
+    location = models.CharField(max_length=255, db_index=True)
     date = models.DateField()
     depth = models.FloatField()
     buddy = models.CharField(max_length=255)
@@ -16,10 +14,10 @@ class Dive(models.Model):
         return f"{self.location} - {self.date}"
 
 class DiveLog(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True) # null = TEMPORARY.
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateField()
     name = models.CharField(max_length=255)
-    location = models.CharField(max_length=255)
+    location = models.CharField(max_length=255, db_index=True)
     buddy = models.CharField(max_length=255)
     depth = models.FloatField()
     temp = models.FloatField()
@@ -29,11 +27,6 @@ class DiveLog(models.Model):
     def __str__(self):
         return self.name
 
-print("Loading Marker model...")  # Debug statement
-
-from django.db import models
-from django.conf import settings
-
 class Marker(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     lat = models.FloatField()
@@ -41,5 +34,3 @@ class Marker(models.Model):
 
     def __str__(self):
         return f"Marker at {self.lat}, {self.lng}"
-
-print("Marker model loaded.")  # Debug statement

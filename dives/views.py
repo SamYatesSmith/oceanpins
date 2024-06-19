@@ -20,7 +20,9 @@ CACHE = {
     'dive_logs': []
 }
 
+
 @csrf_exempt
+@login_required
 def add_dive_log(request):
     if request.method == 'POST':
         try:
@@ -59,15 +61,15 @@ def add_dive_log(request):
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
-        
+
 @csrf_exempt
+@login_required
 def add_dive(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            user = User.objects.first()
             dive = Dive(
-                user=user,
+                user=request.user,
                 location=data['location'],
                 date=data['date'],
                 depth=data['depth'],
@@ -86,19 +88,20 @@ def add_dive(request):
                 connection.close()
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
+
 @login_required
 def home(request):
     return render(request, 'home.html')
 
+
 @login_required
 def interactive_map(request):
-    # Fetch markers and dive logs from the database if not already in the cache
     if not CACHE['markers']:
-        markers = Marker.objects.all().values('lat', 'lng', 'user_id')
+        markers = Marker.objects.select_related('user').all().values('lat', 'lng', 'user_id')
         CACHE['markers'] = list(markers)
     
     if not CACHE['dive_logs']:
-        dive_logs = DiveLog.objects.all().values('date', 'name', 'location', 'buddy', 'depth', 'temp', 'visibility', 'bottom_time', 'user_id')
+        dive_logs = DiveLog.objects.select_related('user').all().values('date', 'name', 'location', 'buddy', 'depth', 'temp', 'visibility', 'bottom_time', 'user_id')
         CACHE['dive_logs'] = list(dive_logs)
 
     markers_json = json.dumps(CACHE['markers'], cls=DjangoJSONEncoder)
@@ -125,30 +128,33 @@ def add_marker(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
+
+@login_required
 def view_dive_logs(request):
     dive_logs = DiveLog.objects.all()
     data = [{'date': log.date, 'name': log.name, 'location': log.location, 'buddy': log.buddy,
              'depth': log.depth, 'temp': log.temp, 'visibility': log.visibility, 'bottom_time': log.bottom_time} for log in dive_logs]
     return JsonResponse({'dive_logs': data})
 
+
+@login_required
 def view_dives(request):
     dives = Dive.objects.all()
     data = [{'location': dive.location, 'date': dive.date, 'depth': dive.depth, 'buddy': dive.buddy,
              'conditions': dive.conditions, 'photos': dive.photos.url if dive.photos else None} for dive in dives]
     return JsonResponse({'dives': data})
 
+
+@login_required
 def get_most_common_buddy(request):
     most_common_buddy = (DiveLog.objects
                          .values('buddy')
                          .annotate(count=Count('buddy'))
                          .order_by('-count')
                          .first())
-    if (most_common_buddy):
-        buddy_name = most_common_buddy['buddy']
-    else:
-        buddy_name = ''
-    
+    buddy_name = most_common_buddy['buddy'] if most_common_buddy else ''
     return JsonResponse({'most_common_buddy': buddy_name})
+
 
 def signup(request):
     if request.method == 'POST':
@@ -159,6 +165,7 @@ def signup(request):
     else:
         form = UserCreationForm()
     return render(request, 'profiles/signup.html', {'form': form})
+
 
 def login_signup_choice(request):
     return render(request, 'profiles/login_signup_choice.html')

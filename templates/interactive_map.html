@@ -118,9 +118,12 @@
         </div>
     </div>
 </div>
-<div id="rawDiveLogs" style="display: none;">{{ dive_logs|safe }}</div>
-<div id="rawMarkers" style="display: none;">{{ markers|safe }}</div>
 <input type="hidden" id="userId" value="{{ user.id }}">
-<script src="https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        window.markersData = JSON.parse('{{ markers|escapejs }}');
+        window.diveLogsData = JSON.parse('{{ dive_logs|escapejs }}');
+    });
+</script>
 <script src="{% static 'javascript/map.js' %}"></script>
 {% endblock %}
