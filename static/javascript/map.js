@@ -1,5 +1,6 @@
 let map;
 let markersArray = [];
+let markerCluster;
 const userId = document.getElementById('userId').value || null;
 
 const getCookie = (name) => {
@@ -38,6 +39,19 @@ function initMap() {
 
     initAutocomplete();
     loadDiveLogs();
+
+    markerCluster = new MarkerClusterer(map, [], {
+        imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+    });
+}
+
+const handleZoomChange = () => {
+    const currentZoom = map.getZoom();
+    if (currentZoom <= 5) {
+        markerCluster.addMarkers(markersArray);
+    } else {
+        markerCluster.clearMarkers();
+    }
 }
 
 const initAutocomplete = () => {
@@ -51,7 +65,7 @@ const initAutocomplete = () => {
         }
         map.setCenter(place.geometry.location);
         map.setZoom(10);
-        input.value = '';  // Clear the search bar
+        input.value = '';
     });
 }
 
@@ -94,6 +108,11 @@ const addMarker = (location) => {
         showConfirmationDialog(() => removeMarker(marker, location));
     });
     markersArray.push(marker);
+    if (map.getZoom() <= 5) {
+        markerCluster.addMarker(marker);
+    } else {
+        marker.setMap(map);
+    }
 }
 
 const removeMarker = (marker, location) => {
@@ -109,23 +128,16 @@ const removeMarker = (marker, location) => {
         },
         body: JSON.stringify({ location: formattedLocation, user: user })
     })
-    .then(response => {
-        console.log('Response status:', response.status);
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('Response data:', data);
         if (data.status === 'success') {
-            marker.setMap(null);
+            markerCluster.removeMarker(marker);
             markersArray = markersArray.filter(m => m !== marker);
         } else {
             alert('Failed to remove dive log: ' + data.message);
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error: ' + error.message);
-    });
+    .catch(error => alert('Error: ' + error.message));
 }
 
 const showConfirmationDialog = (callback) => {
@@ -258,7 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(() => initMap())
         .catch(error => alert('Error loading Google Maps: ' + error.message));
     
-    // Suppress context menu for the entire page
     document.addEventListener('contextmenu', function(event) {
         event.preventDefault();
     });
