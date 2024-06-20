@@ -1,10 +1,7 @@
 let map;
-let diveLogs = [];
-let markers = [];
 let markersArray = [];
 const userId = document.getElementById('userId').value || null;
 
-// Get CSRF token
 const getCookie = (name) => {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -18,53 +15,31 @@ const getCookie = (name) => {
     return cookieValue;
 }
 
-// Debounce function
-const debounce = (func, wait) => {
-    let timeout;
-    return function(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func(...args), wait);
-    };
+const clearLocalStorage = () => {
+    localStorage.clear();
+    sessionStorage.clear();
 }
 
-// Get data from cache
-const getDataFromCache = (key) => JSON.parse(localStorage.getItem(key)) || [];
-
-// Save data to cache
-const saveDataToCache = (key, data) => localStorage.setItem(key, JSON.stringify(data));
-
-// Initialize the map
 function initMap() {
     const mapDiv = document.getElementById('map');
-    if (mapDiv) {
-        map = new google.maps.Map(mapDiv, {
-            center: { lat: 30.049, lng: 2.2277 },
-            zoom: 2,
-            mapTypeId: google.maps.MapTypeId.HYBRID,
-            streetViewControl: false
-        });
-        console.log("Map initialized:", map);
+    map = new google.maps.Map(mapDiv, {
+        center: { lat: 30.049, lng: 2.2277 },
+        zoom: 2,
+        mapTypeId: google.maps.MapTypeId.HYBRID,
+        streetViewControl: false
+    });
 
-        map.addListener('dblclick', debounce((event) => {
-            event.stop();
-            addMarker(event.latLng);
-            updateDiveFormLocation(event.latLng);
-            rotateForm();
-        }, 300));
-        window.addEventListener('resize', () => {
-            const center = map.getCenter();
-            google.maps.event.trigger(map, 'resize');
-            map.setCenter(center);
-        });
+    map.addListener('dblclick', debounce((event) => {
+        const location = event.latLng;
+        addMarker(location);
+        updateDiveFormLocation(location);
+        showDiveForm();
+    }, 300));
 
-        initAutocomplete();
-        initializeData();
-    } else {
-        console.error('Map div not found!');
-    }
+    initAutocomplete();
+    loadDiveLogs();
 }
 
-// Initialize autocomplete
 const initAutocomplete = () => {
     const input = document.getElementById('map-search');
     const autocomplete = new google.maps.places.Autocomplete(input);
@@ -72,60 +47,125 @@ const initAutocomplete = () => {
     autocomplete.addListener('place_changed', () => {
         const place = autocomplete.getPlace();
         if (!place.geometry) {
-            console.error(`No details available for the input '${place.name}'`);
             return;
         }
         map.setCenter(place.geometry.location);
         map.setZoom(10);
-        addMarker(place.geometry.location);
-        updateDiveFormLocation(place.geometry.location);
-        rotateForm();
+        input.value = '';  // Clear the search bar
     });
 }
 
-// Add marker on the map
+const addDiveLog = (location, diveLog) => {
+    diveLog.location = `${location.lat()}, ${location.lng()}`;
+
+    fetch('/dives/add_dive_log/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(diveLog)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            clearDiveForm();
+            hideDiveForm();
+            showConfirmationMessage();
+        } else {
+            alert('Failed to save dive log: ' + data.message);
+        }
+    })
+    .catch(error => alert('Error: ' + error.message));
+}
+
+const formatLocation = (location) => {
+    return `${location.lat().toFixed(6)}, ${location.lng().toFixed(6)}`;
+}
+
 const addMarker = (location) => {
-
-    if (!map) {
-        console.error("Map instance is not initialized");
-        return;
-    }
-
     const marker = new google.maps.Marker({
         position: location,
-        map: map, // Set the map property here
+        map: map,
     });
     marker.addListener('click', () => updateDiveFormLocation(location));
-    marker.addListener('rightclick', () => {
-        marker.setMap(null);
-        clearDiveFormLocation();
+    marker.addListener('rightclick', (e) => {
+        e.domEvent.preventDefault();
+        showConfirmationDialog(() => removeMarker(marker, location));
     });
     markersArray.push(marker);
-    saveMarker(location);
+}
 
-    if (typeof MarkerClusterer !== 'undefined') {
-        updateMarkerCluster();
-    } else {
-        console.error('MarkerClusterer is not defined. Make sure the MarkerClusterer library is loaded.');
+const removeMarker = (marker, location) => {
+    const formattedLocation = formatLocation(location);
+    const user = userId;
+    console.log('Attempting to remove marker at location:', formattedLocation, 'for user:', user);
+
+    fetch('https://8000-samyatessmith-oceanpins-afvm4g1x7r4.ws-eu114.gitpod.io/dives/remove_dive_log/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ location: formattedLocation, user: user })
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.status === 'success') {
+            marker.setMap(null);
+            markersArray = markersArray.filter(m => m !== marker);
+        } else {
+            alert('Failed to remove dive log: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+    });
+}
+
+const showConfirmationDialog = (callback) => {
+    let confirmationModal = document.getElementById('confirmationModal');
+    if (!confirmationModal) {
+        confirmationModal = document.createElement('div');
+        confirmationModal.id = 'confirmationModal';
+        confirmationModal.classList.add('modal', 'fade');
+        confirmationModal.setAttribute('tabindex', '-1');
+        confirmationModal.setAttribute('role', 'dialog');
+        confirmationModal.innerHTML = `
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Marker Removal</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to remove this marker?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                        <button type="button" class="btn btn-primary" id="confirmYes">Yes</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(confirmationModal);
     }
-}
 
-// Save marker with debounce
-const saveMarker = (location) => {
-    const marker = { lat: location.lat(), lng: location.lng(), user: userId };
-    if (!markers.some(m => m.lat === marker.lat && m.lng === marker.lng && m.user === marker.user)) {
-        markers.push(marker);
-        saveDataToCache('markers', markers);
-        debouncedSaveMarkerToServer(location);
-    }
-}
+    $(confirmationModal).modal('show');
 
-const debouncedSaveMarkerRequest = debounce(saveMarker, 500);
-
-const clearDiveFormLocation = () => {
-    const diveLocation = document.getElementById('diveLocation');
-    if (diveLocation) diveLocation.value = '';
-}
+    const confirmYesButton = document.getElementById('confirmYes');
+    confirmYesButton.onclick = () => {
+        $(confirmationModal).modal('hide');
+        callback();
+    };
+};
 
 const updateDiveFormLocation = (location) => {
     const latLngStr = `${location.lat()}, ${location.lng()}`;
@@ -133,19 +173,26 @@ const updateDiveFormLocation = (location) => {
     if (diveLocation) diveLocation.value = latLngStr;
 }
 
-const rotateForm = () => {
-    const initialImage = document.getElementById('initialImage');
-    const addDiveForm = document.getElementById('addDiveForm');
-    if (initialImage && addDiveForm) {
-        initialImage.style.display = 'none';
-        addDiveForm.style.display = 'block';
-    }
+const showDiveForm = () => {
+    document.getElementById('initialImage').style.display = 'none';
+    document.getElementById('randomImage').style.display = 'none';
+    document.getElementById('addDiveForm').style.display = 'block';
 }
 
 const hideDiveForm = () => {
-    const addDiveForm = document.getElementById('addDiveForm');
-    if (addDiveForm) addDiveForm.style.display = 'none';
+    document.getElementById('addDiveForm').style.display = 'none';
     showRandomImage();
+}
+
+const clearDiveForm = () => {
+    document.getElementById('diveDate').value = '';
+    document.getElementById('diveName').value = '';
+    document.getElementById('diveLocation').value = '';
+    document.getElementById('diveBuddy').value = '';
+    document.getElementById('diveDepth').value = '';
+    document.getElementById('waterTemp').value = '';
+    document.getElementById('visibility').value = '';
+    document.getElementById('bottomTime').value = '';
 }
 
 const showConfirmationMessage = () => {
@@ -154,7 +201,6 @@ const showConfirmationMessage = () => {
         messageContainer.style.display = 'block';
         setTimeout(() => {
             messageContainer.style.display = 'none';
-            showRandomImage();
         }, 5000);
     }
 }
@@ -176,166 +222,62 @@ const showRandomImage = () => {
     }
 }
 
-// Render existing dive logs
-const renderDiveLogs = () => {
-    if (Array.isArray(diveLogs) && diveLogs.length) {
-        diveLogs.forEach(log => {
-            const [lat, lng] = log.location.split(',').map(Number);
-            addMarker(new google.maps.LatLng(lat, lng));
-        });
-    } else {
-        console.warn('No dive logs found or diveLogs is not an array');
-    }
-}
+document.getElementById('addDiveForm').onsubmit = (e) => {
+    e.preventDefault();
+    const locationStr = document.getElementById('diveLocation').value;
+    const [lat, lng] = locationStr.split(',').map(Number);
+    const location = new google.maps.LatLng(lat, lng);
+    const diveLog = {
+        date: document.getElementById('diveDate').value,
+        name: document.getElementById('diveName').value,
+        buddy: document.getElementById('diveBuddy').value,
+        depth: document.getElementById('diveDepth').value,
+        temp: document.getElementById('waterTemp').value,
+        visibility: document.getElementById('visibility').value,
+        bottomTime: document.getElementById('bottomTime').value,
+    };
+    addDiveLog(location, diveLog);
+};
 
-const initializeData = () => {
-    markers = window.markersData || [];
-    diveLogs = window.diveLogsData || [];
-
-    renderDiveLogs();
-    renderMarkers();
-}
-
-const renderMarkers = () => {
-    markersArray.forEach(marker => marker.setMap(null));
-    markersArray = [];
-
-    if (Array.isArray(markers) && markers.length && map) { // Check if map is available
-        markers.forEach(markerData => {
-            const marker = new google.maps.Marker({
-                position: { lat: markerData.lat, lng: markerData.lng },
-                map: map, // Set the map property here
+const loadDiveLogs = () => {
+    fetch('/dives/view_dive_logs/')
+        .then(response => response.json())
+        .then(data => {
+            const diveLogs = data.dive_logs;
+            diveLogs.forEach(log => {
+                const [lat, lng] = log.location.split(',').map(coord => parseFloat(coord).toFixed(6));
+                addMarker(new google.maps.LatLng(parseFloat(lat), parseFloat(lng)));
             });
-            // ... (rest of the code)
-        });
-        updateMarkerCluster();
-    } else {
-        console.warn('No markers found or markers is not an array or map is not initialized');
-    }
-}
-
-const updateMarkerCluster = () => {
-    if (typeof MarkerClusterer !== 'undefined') {
-        if (map && map.markerClusterer) map.markerClusterer.clearMarkers(); // Check if map is available
-
-        map.markerClusterer = new MarkerClusterer({
-            markers: markersArray,
-            map: map,
-            algorithm: {
-                maxZoom: 15,
-                gridSize: 60
-            },
-            renderer: {
-                render: ({ count }) => {
-                    return {
-                        element: createClusterElement(count),
-                        anchor: { x: 15, y: 15 }
-                    };
-                }
-            }
-        });
-    } else {
-        console.error('MarkerClusterer is not defined. Make sure the MarkerClusterer library is loaded.');
-    }
-}
-
-const createClusterElement = (count) => {
-    const div = document.createElement('div');
-    div.style.position = 'absolute';
-    div.style.width = '30px';
-    div.style.height = '30px';
-    div.style.background = 'rgba(0, 128, 0, 0.6)';
-    div.style.borderRadius = '50%';
-    div.style.display = 'flex';
-    div.style.alignItems = 'center';
-    div.style.justifyContent = 'center';
-    div.style.color = 'white';
-    div.style.fontSize = '14px';
-    div.style.fontWeight = 'bold';
-    div.textContent = count;
-    return div;
-}
-
-const saveDiveLog = (diveLog) => {
-    diveLogs.push(diveLog);
-    saveDataToCache('dive_logs', diveLogs);
-    debouncedSaveDiveLog();
-}
-
-const debouncedSaveMarkerToServer = debounce((location) => {
-    fetch('/dives/add_marker/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({ lat: location.lat(), lng: location.lng() })
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok: ' + response.statusText);
-        return response.json();
-    })
-    .then(data => {
-        if (data.status !== 'success') throw new Error('Server error: ' + data.message);
-        markers = [];
-        saveDataToCache('markers', markers);
-    })
-    .catch(error => console.error('Error:', error.message));
-}, 500);
-
-const debouncedSaveDiveLog = debounce(() => {
-    fetch('/dives/add_dive_log/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify(diveLogs)
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok: ' + response.statusText);
-        return response.json();
-    })
-    .then(data => {
-        if (data.status !== 'success') throw new Error('Server error: ' + data.message);
-        diveLogs = [];
-        saveDataToCache('dive_logs', diveLogs);
-    })
-    .catch(error => console.error('Error:', error.message));
-}, 500);
-
-function loadGoogleMapsApi() {
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&libraries=places';
-        script.async = true;
-        script.defer = true;
-        script.onload = () => resolve();
-        script.onerror = (e) => reject(new Error(`Failed to load Google Maps API: ${e.message}`));
-        document.head.appendChild(script);
-    });
-}
-
-function loadMarkerClusterer() {
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js';
-        script.async = true;
-        script.defer = true;
-        script.onload = () => resolve();
-        script.onerror = (e) => reject(new Error(`Failed to load MarkerClusterer library: ${e.message}`));
-        document.head.appendChild(script);
-    });
+        })
+        .catch(error => alert('Error loading dive logs: ' + error.message));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    clearLocalStorage();
     loadGoogleMapsApi()
-        .then(() => loadMarkerClusterer())
-        .then(() => {
-            console.log('Google Maps and MarkerClusterer scripts loaded');
-            initMap(); // Call initMap here
-        })
-        .catch((error) => {
-            console.error('Error loading Google Maps or MarkerClusterer scripts:', error);
-        });
+        .then(() => initMap())
+        .catch(error => alert('Error loading Google Maps: ' + error.message));
+    
+    // Suppress context menu for the entire page
+    document.addEventListener('contextmenu', function(event) {
+        event.preventDefault();
+    });
 });
+
+const loadGoogleMapsApi = () => new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&libraries=places';
+    script.async = true;
+    script.defer = true;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('Failed to load Google Maps API'));
+    document.head.appendChild(script);
+});
+
+const debounce = (func, wait) => {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+    };
+}

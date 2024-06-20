@@ -1,18 +1,6 @@
 from django.db import models
 from django.conf import settings
 
-class Dive(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    location = models.CharField(max_length=255, db_index=True)
-    date = models.DateField()
-    depth = models.FloatField()
-    buddy = models.CharField(max_length=255)
-    conditions = models.TextField()
-    photos = models.ImageField(upload_to='dive_photos/', blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.location} - {self.date}"
-
 class DiveLog(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateField()
@@ -26,11 +14,3 @@ class DiveLog(models.Model):
 
     def __str__(self):
         return self.name
-
-class Marker(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    lat = models.FloatField()
-    lng = models.FloatField()
-
-    def __str__(self):
-        return f"Marker at {self.lat}, {self.lng}"
