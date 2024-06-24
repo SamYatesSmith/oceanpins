@@ -98,12 +98,6 @@ main {
     padding: 0 5%;
 }
 
-.header-overlay .container-fluid,
-.header-overlay .row {
-    width: 100%;
-    height: 100%;
-}
-
 .header-overlay .container-fluid {
     padding: 0;
 }
@@ -114,8 +108,8 @@ main {
 
 .logo-container {
     display: flex;
-    align-items: center; /* Vertically center the content */
-    justify-content: flex-start; /* Align content to the start (left) */
+    align-items: center;
+    justify-content: flex-start;
     height: var(--header-height);
 }
 
@@ -243,7 +237,7 @@ main {
     color: white;
     border-color: transparent;
 }
-/* Rotating button border effect */
+
 .hero .btn::before {
     content: '';
     position: absolute;
@@ -320,10 +314,6 @@ main {
     font-size: 24px;
 }
 
-.social-media a:hover {
-    color: #D4AF37
-}
-
 footer .social-media a {
     margin: 0 1rem;
     color: #fff;
@@ -381,7 +371,6 @@ form button:hover {
 }
 
 .login-container {
-
     width: 100%;
     height: 100%;
     display: flex;
@@ -401,6 +390,11 @@ form button:hover {
 
 /* interactive_map.html */
 
+.row {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
 .map-background {
     background-image: url('../images/fishshoal.jpg');
     background-size: cover;
@@ -414,10 +408,20 @@ form button:hover {
     box-sizing: border-box;
 }
 
+.map-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 .map-container {
     flex: 1;
+    flex-grow: 1;
     display: flex;
-    flex-direction: column;
     overflow: hidden;
     padding-top: var(--header-height);
     padding-bottom: var(--footer-height);
@@ -452,7 +456,6 @@ form button:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(0, 123, 255, 0.7), rgba(0, 123, 255, 0.3)); /* Gradient overlay */
     border-radius: 8px;
     z-index: -1;
 }
@@ -474,18 +477,17 @@ form button:hover {
 }
 
 .head-row {
-    height: var(--header-height);
-    flex-shrink: 0;
-    margin-bottom: 15px;
+    height: 150px;
 }
 
 .guide-container {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    margin-top: 25px;
-    margin-bottom: 25px;
-    height: 92%;
+    transition: width 0.3s;
+    overflow: hidden;
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
 }
 
 .guide-container ol {
@@ -499,15 +501,62 @@ form button:hover {
     color: white
 }
 
+.col-md-2 {
+    position: relative;
+}
+
+.guide-container.expanded {
+    width: 100%;
+}
+
+#toggleGuide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: none;
+    box-shadow: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    Border-radius: 8px;
+}
+
+#toggleGuide p {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+#toggleArrow {
+    display: inline-block;
+    font-size: 1.5rem;
+}
+
+.arrow-right::before {
+    content: "➔";
+    color: white
+}
+
+.arrow-down::before {
+    content: "⬇";
+    color: white
+}
+
+#guideList {
+    display: none;
+    padding-left: 20px;
+    padding-top: 20px;
+    padding-right: 15px;
+}
+
 #map {
-    margin: 25px -7.5px;
-    background-color: #e0f7fa;
     border-radius: 8px;
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
-    border: 2px solid #D4AF37;
-    flex: 1;
-    height: auto;
-    width: 85%;
+    box-shadow: 0 0 15px white;
+    border: 2px solid white;
+    height: 100%;
+    width: 100%;
 }
 
 .addDiveForm {

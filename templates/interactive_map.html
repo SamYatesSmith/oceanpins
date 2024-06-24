@@ -25,22 +25,30 @@
                 </div>
             </div>
             <div class="row flex-grow-1">
-                <div class="col-md-2">
+                <div class="col-md-2 guide-col">
                     <div class="guide-container">
-                        <h4 class="guide-list-head">How to Use the Map:</h4>
-                        <ol class="guide-list">
-                            <li>Double click to add a pin.</li>
-                            <li>Right click on the added pin to remove it.</li>
-                            <li>Fill out the form.</li>
-                            <li>Save the dive details.</li>
-                            <li>Zoom in and out using mouse jogwheel, or buttons provided.</li>
-                            <li>Use search feature provided to quickly find your dive area.</li>
-                        </ol>
+                        <button class="btn btn-secondary" type="button" id="toggleGuide" aria-expanded="false" aria-controls="guideList">
+                            <p>Map Help</p>
+                            <span id="toggleArrow" class="arrow-right"></span>
+                        </button>
+                        <div id="guideList" class="collapse">
+                            <h4 class="guide-list-head">How to Use the Map:</h4>
+                            <ol class="guide-list">
+                                <li>Double click to add a pin.</li>
+                                <li>Right click on the added pin to remove it.</li>
+                                <li>Fill out the form.</li>
+                                <li>Save the dive details.</li>
+                                <li>Zoom in and out using mouse jogwheel, or buttons provided.</li>
+                                <li>Use search feature provided to quickly find your dive area.</li>
+                                <li>Hover your mouse over your marker to see its details</li>
+                                <li>left-click on your marker to adjsut its details, remember to save when you're finished.</li>
+                            </ol>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-7 d-flex">
-                    <div id='map' class="flex-fill">
-                    <!-- Placeholder for the interactive map -->
+                <div class="col-md-7 d-flex map-col">
+                    <div id="map" class="flex">
+                        <!-- Placeholder for the interactive map -->
                     </div>
                 </div>
                 <div class="col-md-3 d-flex flex-column">
@@ -124,6 +132,7 @@
         window.diveLogsData = JSON.parse('{{ dive_logs|escapejs }}');
     });
 </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
 <script src="{% static 'javascript/map.js' %}"></script>
 {% endblock %}

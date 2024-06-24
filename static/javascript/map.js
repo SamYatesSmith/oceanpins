@@ -21,6 +21,33 @@ const clearLocalStorage = () => {
     sessionStorage.clear();
 }
 
+$(document).ready(function() {
+    $('#toggleGuide').click(function() {
+        var $guideContainer = $('.guide-container');
+        var $guideList = $('#guideList');
+        var $toggleArrow = $('#toggleArrow');
+        var $guideCol = $('.guide-col');
+        var $mapCol = $('.map-col');
+
+        $guideList.slideToggle(300, function() {
+            if ($guideList.is(':visible')) {
+                $guideContainer.addClass('expanded');
+                $toggleArrow.removeClass('arrow-right').addClass('arrow-down');
+                $('#toggleGuide').attr('aria-expanded', 'true');
+                $guideCol.addClass('col-md-2').removeClass('col-md-1');
+                $mapCol.addClass('col-md-7').removeClass('col-md-8');
+            } else {
+                $guideContainer.removeClass('expanded');
+                $toggleArrow.removeClass('arrow-down').addClass('arrow-right');
+                $('#toggleGuide').attr('aria-expanded', 'false');
+                $guideCol.addClass('col-md-1').removeClass('col-md-2');
+                $mapCol.addClass('col-md-8').removeClass('col-md-7');
+            }
+        });
+    });
+});
+
+
 function initMap() {
     const mapDiv = document.getElementById('map');
     map = new google.maps.Map(mapDiv, {
@@ -32,10 +59,37 @@ function initMap() {
 
     map.addListener('dblclick', debounce((event) => {
         const location = event.latLng;
-        addMarker(location);
+        const diveLog = {
+            date: new Date().toISOString().split('T')[0],
+            name: '',
+            buddy: '',
+            depth: 0,
+            temp: 0,
+            visibility: 0,
+            bottom_time: 0
+        };
+
+        const marker = addMarker(location, diveLog);
+
         updateDiveFormLocation(location);
         showDiveForm();
+
+        document.getElementById('addDiveForm').onsubmit = (e) => {
+            e.preventDefault();
+
+            diveLog.date = document.getElementById('diveDate').value;
+            diveLog.name = document.getElementById('diveName').value;
+            diveLog.buddy = document.getElementById('diveBuddy').value;
+            diveLog.depth = document.getElementById('diveDepth').value;
+            diveLog.temp = document.getElementById('waterTemp').value;
+            diveLog.visibility = document.getElementById('visibility').value;
+            diveLog.bottom_time = document.getElementById('bottomTime').value;
+
+            addDiveLog(location, diveLog, marker);
+        };
     }, 300));
+
+    map.addListener('zoom_changed', handleZoomChange);
 
     initAutocomplete();
     loadDiveLogs();
@@ -51,6 +105,7 @@ const handleZoomChange = () => {
         markerCluster.addMarkers(markersArray);
     } else {
         markerCluster.clearMarkers();
+        markersArray.forEach(marker => marker.setMap(map));
     }
 }
 
@@ -69,8 +124,14 @@ const initAutocomplete = () => {
     });
 }
 
-const addDiveLog = (location, diveLog) => {
+const addDiveLog = (location, diveLog, marker) => {
+    if (!diveLog.date || !/^\d{4}-\d{2}-\d{2}$/.test(diveLog.date)) {
+        diveLog.date = new Date().toISOString().split('T')[0]; // Set to current date if not valid
+    }
+
     diveLog.location = `${location.lat()}, ${location.lng()}`;
+
+    console.log('Adding new dive log with data:', diveLog);
 
     fetch('/dives/add_dive_log/', {
         method: 'POST',
@@ -83,6 +144,8 @@ const addDiveLog = (location, diveLog) => {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
+            diveLog.id = data.dive_log;
+            marker.diveLog = diveLog;
             clearDiveForm();
             hideDiveForm();
             showConfirmationMessage();
@@ -91,28 +154,128 @@ const addDiveLog = (location, diveLog) => {
         }
     })
     .catch(error => alert('Error: ' + error.message));
-}
+};
 
 const formatLocation = (location) => {
     return `${location.lat().toFixed(6)}, ${location.lng().toFixed(6)}`;
 }
 
-const addMarker = (location) => {
+const loadDiveLogs = () => {
+    fetch('/dives/view_dive_logs/')
+        .then(response => response.json())
+        .then(data => {
+            const diveLogs = data.dive_logs;
+            diveLogs.forEach(log => {
+                const [lat, lng] = log.location.split(',').map(coord => parseFloat(coord).toFixed(6));
+                const location = new google.maps.LatLng(parseFloat(lat), parseFloat(lng));
+                addMarker(location, log);
+            });
+        })
+        .catch(error => alert('Error loading dive logs: ' + error.message));
+};
+
+
+const addMarker = (location, diveLog) => {
     const marker = new google.maps.Marker({
         position: location,
-        map: map,
     });
-    marker.addListener('click', () => updateDiveFormLocation(location));
-    marker.addListener('rightclick', (e) => {
-        e.domEvent.preventDefault();
-        showConfirmationDialog(() => removeMarker(marker, location));
+
+    marker.diveLog = diveLog || {};
+
+    marker.addListener('click', () => {
+        showEditDiveForm(marker);
     });
+
+    marker.addListener('mouseover', () => {
+        showHoverWindow(marker);
+    });
+
+    marker.addListener('mouseout', () => {
+        hideHoverWindow(marker);
+    });
+
+    marker.addListener('rightclick', (event) => {
+        showConfirmationDialog(() => {
+            removeMarker(marker, location);
+        });
+    });
+
     markersArray.push(marker);
     if (map.getZoom() <= 5) {
         markerCluster.addMarker(marker);
     } else {
         marker.setMap(map);
     }
+    
+    return marker;
+};
+
+const showHoverWindow = (marker) => {
+    const diveLog = marker.diveLog || {};
+    const contentString = `
+        <div>
+            <p><strong>Dive Name:</strong> ${diveLog.name || 'N/A'}</p>
+            <p><strong>Date:</strong> ${diveLog.date || 'N/A'}</p>
+            <p><strong>Location:</strong> ${diveLog.location || 'N/A'}</p>
+            <p><strong>Buddy:</strong> ${diveLog.buddy || 'N/A'}</p>
+            <p><strong>Depth:</strong> ${diveLog.depth !== undefined ? diveLog.depth + ' meters' : 'N/A'}</p>
+            <p><strong>Water Temp:</strong> ${diveLog.temp !== undefined ? diveLog.temp + ' °C' : 'N/A'}</p>
+            <p><strong>Visibility:</strong> ${diveLog.visibility !== undefined ? diveLog.visibility + ' meters' : 'N/A'}</p>
+            <p><strong>Bottom Time:</strong> ${diveLog.bottom_time !== undefined ? diveLog.bottom_time + ' minutes' : 'N/A'}</p>
+        </div>
+    `;
+    const infowindow = new google.maps.InfoWindow({
+        content: contentString,
+    });
+    infowindow.open(map, marker);
+    marker.infowindow = infowindow;
+};
+
+
+const hideHoverWindow = (marker) => {
+    if (marker && marker.infowindow) {
+        marker.infowindow.close();
+        marker.infowindow = null;
+    }
+}
+
+const showEditDiveForm = (marker) => {
+    const diveLog = marker.diveLog;
+
+    const addDiveForm = document.getElementById('addDiveForm');
+    const initialImage = document.getElementById('initialImage');
+    const randomImage = document.getElementById('randomImage');
+
+    if (addDiveForm) addDiveForm.style.display = 'block';
+    if (initialImage) initialImage.style.display = 'none';
+    if (randomImage) randomImage.style.display = 'none';
+
+    document.getElementById('diveDate').value = diveLog.date || '';
+    document.getElementById('diveName').value = diveLog.name || '';
+    document.getElementById('diveLocation').value = diveLog.location || '';
+    document.getElementById('diveBuddy').value = diveLog.buddy || '';
+    document.getElementById('diveDepth').value = diveLog.depth || '';
+    document.getElementById('waterTemp').value = diveLog.temp || '';
+    document.getElementById('visibility').value = diveLog.visibility || '';
+    document.getElementById('bottomTime').value = diveLog.bottom_time || '';
+
+    const formTitle = document.querySelector('#addDiveForm h2');
+    if (formTitle) formTitle.textContent = 'Edit your Dive';
+
+    addDiveForm.onsubmit = (e) => {
+        e.preventDefault();
+        const updatedDiveLog = {
+            date: document.getElementById('diveDate').value,
+            name: document.getElementById('diveName').value,
+            location: document.getElementById('diveLocation').value,
+            buddy: document.getElementById('diveBuddy').value,
+            depth: document.getElementById('diveDepth').value,
+            temp: document.getElementById('waterTemp').value,
+            visibility: document.getElementById('visibility').value,
+            bottomTime: document.getElementById('bottomTime').value,
+        };
+        updateDiveLog(marker, updatedDiveLog);
+    };
 }
 
 const removeMarker = (marker, location) => {
@@ -120,25 +283,30 @@ const removeMarker = (marker, location) => {
     const user = userId;
     console.log('Attempting to remove marker at location:', formattedLocation, 'for user:', user);
 
-    fetch('https://8000-samyatessmith-oceanpins-afvm4g1x7r4.ws-eu114.gitpod.io/dives/remove_dive_log/', {
+    const payload = { id: marker.diveLog.id, location: formattedLocation, user: user };
+    console.log('Payload being sent for removal:', payload);  // Log the payload
+
+    fetch('/dives/remove_dive_log/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken')
         },
-        body: JSON.stringify({ location: formattedLocation, user: user })
+        body: JSON.stringify(payload)
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
+            console.log(`Marker at location ${formattedLocation} removed successfully.`);
             markerCluster.removeMarker(marker);
             markersArray = markersArray.filter(m => m !== marker);
+            marker.setMap(null);  // Ensure the marker is removed from the map
         } else {
             alert('Failed to remove dive log: ' + data.message);
         }
     })
     .catch(error => alert('Error: ' + error.message));
-}
+};
 
 const showConfirmationDialog = (callback) => {
     let confirmationModal = document.getElementById('confirmationModal');
@@ -178,6 +346,7 @@ const showConfirmationDialog = (callback) => {
         callback();
     };
 };
+
 
 const updateDiveFormLocation = (location) => {
     const latLngStr = `${location.lat()}, ${location.lng()}`;
@@ -251,18 +420,31 @@ document.getElementById('addDiveForm').onsubmit = (e) => {
     addDiveLog(location, diveLog);
 };
 
-const loadDiveLogs = () => {
-    fetch('/dives/view_dive_logs/')
-        .then(response => response.json())
-        .then(data => {
-            const diveLogs = data.dive_logs;
-            diveLogs.forEach(log => {
-                const [lat, lng] = log.location.split(',').map(coord => parseFloat(coord).toFixed(6));
-                addMarker(new google.maps.LatLng(parseFloat(lat), parseFloat(lng)));
-            });
-        })
-        .catch(error => alert('Error loading dive logs: ' + error.message));
-}
+const updateDiveLog = (marker, updatedDiveLog) => {
+    const payload = { id: marker.diveLog.id, ...updatedDiveLog };
+    console.log('Payload being sent:', payload);
+
+    fetch('/dives/update_dive_log/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            marker.diveLog = { ...marker.diveLog, ...updatedDiveLog };
+            hideDiveForm();
+            showConfirmationMessage();
+        } else {
+            alert('Failed to update dive log: ' + data.message);
+        }
+    })
+    .catch(error => alert('Error: ' + error.message));
+};
+
 
 document.addEventListener('DOMContentLoaded', () => {
     clearLocalStorage();
