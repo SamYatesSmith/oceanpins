@@ -9,7 +9,9 @@ urlpatterns = [
     path('view_dive_logs/', views.view_dive_logs, name='view_dive_logs'),
     path('update_dive_log/', views.update_dive_log, name='update_dive_log'),
     path('remove_dive_log/', views.remove_dive_log, name='remove_dive_log'),
-    path('most_common_buddy/', views.get_most_common_buddy, name='most_common_buddy'),
+    path('get_dive_count/', views.get_dive_count, name='get_dive_count'),
+    path('most_recent_buddy/', views.get_most_recent_buddy, name='most_recent_buddy'),
     path('interactive_map/', views.interactive_map, name='interactive_map'),
-     path('profile/', views.profile_view, name='profile'),
+    path('profile/', views.profile_view, name='profile'),
 ]
+

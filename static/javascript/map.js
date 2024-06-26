@@ -1,7 +1,12 @@
-let map;
+let diveMap;
 let markersArray = [];
 let markerCluster;
-const userId = document.getElementById('userId').value || null;
+let userId = null;
+const userIdElement = document.getElementById('userId');
+
+if (userIdElement) {
+    userId = userIdElement.value;
+}
 
 const getCookie = (name) => {
     let cookieValue = null;
@@ -15,6 +20,8 @@ const getCookie = (name) => {
     }
     return cookieValue;
 }
+
+const csrftoken = getCookie('csrftoken');
 
 const clearLocalStorage = () => {
     localStorage.clear();
@@ -50,14 +57,14 @@ $(document).ready(function() {
 
 function initMap() {
     const mapDiv = document.getElementById('map');
-    map = new google.maps.Map(mapDiv, {
+    diveMap = new google.maps.Map(mapDiv, {
         center: { lat: 30.049, lng: 2.2277 },
         zoom: 2,
         mapTypeId: google.maps.MapTypeId.HYBRID,
         streetViewControl: false
     });
 
-    map.addListener('dblclick', debounce((event) => {
+    diveMap.addListener('dblclick', debounce((event) => {
         const location = event.latLng;
         const diveLog = {
             date: new Date().toISOString().split('T')[0],
@@ -89,23 +96,23 @@ function initMap() {
         };
     }, 300));
 
-    map.addListener('zoom_changed', handleZoomChange);
+    diveMap.addListener('zoom_changed', handleZoomChange);
 
     initAutocomplete();
     loadDiveLogs();
 
-    markerCluster = new MarkerClusterer(map, [], {
+    markerCluster = new MarkerClusterer(diveMap, [], {
         imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
     });
 }
 
 const handleZoomChange = () => {
-    const currentZoom = map.getZoom();
+    const currentZoom = diveMap.getZoom();
     if (currentZoom <= 5) {
         markerCluster.addMarkers(markersArray);
     } else {
         markerCluster.clearMarkers();
-        markersArray.forEach(marker => marker.setMap(map));
+        markersArray.forEach(marker => marker.setMap(diveMap));
     }
 }
 
@@ -118,8 +125,8 @@ const initAutocomplete = () => {
         if (!place.geometry) {
             return;
         }
-        map.setCenter(place.geometry.location);
-        map.setZoom(10);
+        diveMap.setCenter(place.geometry.location);
+        diveMap.setZoom(10);
         input.value = '';
     });
 }
@@ -201,10 +208,10 @@ const addMarker = (location, diveLog) => {
     });
 
     markersArray.push(marker);
-    if (map.getZoom() <= 5) {
+    if (diveMap.getZoom() <= 5) {
         markerCluster.addMarker(marker);
     } else {
-        marker.setMap(map);
+        marker.setMap(diveMap);
     }
     
     return marker;
@@ -227,7 +234,7 @@ const showHoverWindow = (marker) => {
     const infowindow = new google.maps.InfoWindow({
         content: contentString,
     });
-    infowindow.open(map, marker);
+    infowindow.open(diveMap, marker);
     marker.infowindow = infowindow;
 };
 
@@ -445,7 +452,6 @@ const updateDiveLog = (marker, updatedDiveLog) => {
     .catch(error => alert('Error: ' + error.message));
 };
 
-
 document.addEventListener('DOMContentLoaded', () => {
     clearLocalStorage();
     loadGoogleMapsApi()
@@ -456,6 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
     });
 });
+
 
 const loadGoogleMapsApi = () => new Promise((resolve, reject) => {
     const script = document.createElement('script');

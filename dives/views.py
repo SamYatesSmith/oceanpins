@@ -11,7 +11,14 @@ from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.http import require_POST
 from .models import DiveLog
 
+
 User = get_user_model()
+
+@login_required
+def profile_view(request):
+    print(f"User: {request.user}")
+    return render(request, 'profile.html')
+
 
 # Helper function to close the database connection
 def close_connection():
@@ -26,12 +33,7 @@ def close_connection():
 def add_dive_log(request):
     try:
         data = json.loads(request.body)
-
-        try:
-            datetime.strptime(data['date'], '%Y-%m-%d')
-        except ValueError:
-            return JsonResponse({'status': 'error', 'message': 'Invalid date format. It must be in YYYY-MM-DD format.'}, status=400)
-
+        datetime.strptime(data['date'], '%Y-%m-%d')
         dive_log = DiveLog(
             date=data['date'],
             name=data['name'],
@@ -44,6 +46,7 @@ def add_dive_log(request):
             user=request.user
         )
         dive_log.save()
+
         return JsonResponse({'status': 'success', 'dive_log': dive_log.id})
     except KeyError as e:
         return JsonResponse({'status': 'error', 'message': f'Missing key: {str(e)}'}, status=400)
@@ -64,7 +67,7 @@ def interactive_map(request):
     dive_logs_json = json.dumps(list(dive_logs), cls=DjangoJSONEncoder)
 
     return render(request, 'interactive_map.html', {
-        'dive_logs': dive_logs_json
+        'dive_logs': dive_logs_json,
     })
 
 
@@ -87,6 +90,7 @@ def update_dive_log(request):
         dive_log.visibility = data.get('visibility', dive_log.visibility)
         dive_log.bottom_time = data.get('bottomTime', dive_log.bottom_time)
         dive_log.save()
+
         return JsonResponse({'status': 'success'})
     except DiveLog.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Dive log not found'}, status=404)
@@ -102,16 +106,12 @@ def remove_dive_log(request):
         data = json.loads(request.body)
         dive_log_id = data.get('id')
         user = request.user
-        print(f"Received request to remove dive log with id: {dive_log_id} for user: {user}")
-
         if not dive_log_id:
             return JsonResponse({'status': 'error', 'message': 'Invalid data received: Missing ID'}, status=400)
 
         dive_log = DiveLog.objects.filter(id=dive_log_id, user=user)
-        print(f"Filtered dive logs: {list(dive_log)}")
         if dive_log.exists():
             dive_log.delete()
-            print(f"Dive log with id {dive_log_id} removed.")
             return JsonResponse({'status': 'success'})
         else:
             print(f"Dive log with id {dive_log_id} not found.")
@@ -124,10 +124,10 @@ def remove_dive_log(request):
 
 @login_required
 def view_dive_logs(request):
-    dive_logs = DiveLog.objects.all()
+    dive_logs = DiveLog.objects.filter(user=request.user)
     data = [
         {
-            'id': log.id,  # Include the unique identifier
+            'id': log.id,
             'date': log.date,
             'name': log.name,
             'location': log.location,
@@ -143,14 +143,11 @@ def view_dive_logs(request):
 
 
 @login_required
-def get_most_common_buddy(request):
-    most_common_buddy = (DiveLog.objects
-                         .values('buddy')
-                         .annotate(count=Count('buddy'))
-                         .order_by('-count')
-                         .first())
-    buddy_name = most_common_buddy['buddy'] if most_common_buddy else ''
-    return JsonResponse({'most_common_buddy': buddy_name})
+def get_most_recent_buddy(request):
+    print("get_most_recent_buddy view called")  # Debugging statement
+    most_recent_buddy = DiveLog.objects.filter(user=request.user).order_by('-date').values('buddy').first()
+    print(f"most_recent_buddy: {most_recent_buddy}")  # Debugging statement
+    return JsonResponse({'most_recent_buddy': most_recent_buddy['buddy'] if most_recent_buddy else 'No data available'})
 
 
 def signup(request):
@@ -167,6 +164,13 @@ def signup(request):
 def login_signup_choice(request):
     return render(request, 'profiles/login_signup_choice.html')
 
+
+@login_required
+def get_dive_count(request):
+    print("get_dive_count view called")  # Debugging statement
+    dive_count = DiveLog.objects.filter(user=request.user).count()
+    print(f"dive_count: {dive_count}")  # Debugging statement
+    return JsonResponse({'dive_count': dive_count}) 
 
 @login_required
 def profile_view(request):

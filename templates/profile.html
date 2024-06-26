@@ -8,7 +8,7 @@
     <div class="profile-container">
         <div class="profile-heading-fluid col-12">
             <div class="profile-row">
-                <h1 class="profile-heading text-left">Your Dive Profile</h1>
+                <h1 class="profile-heading text-center">Your Dive Profile</h1>
             </div>
         </div>
         <div class="user-container d-flex align-items-center justify-content-between">
@@ -39,7 +39,7 @@
                                         </li>
                                         <li class="list-group-item">
                                             <label for="diveCount">Number of Dives so far:</label>
-                                            <input type="number" id="diveCount" class="form-control" placeholder="Enter number of dives">
+                                            <input type="number" id="diveCount" class="form-control" readonly>
                                         </li>
                                         <li class="list-group-item">
                                             <label for="diveSchool">Dive School?</label>
@@ -94,5 +94,5 @@
             </div>
         </div>
     </div>
+<script src="{% static 'javascript/profile.js' %}"></script>
 {% endblock %}
-
