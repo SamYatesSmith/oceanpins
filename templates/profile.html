@@ -20,68 +20,28 @@
                             <img src="{% static 'images/user_default.png' %}" class="rounded-circle img-fluid" alt="User chosen image/photo">
                         </div>
                         <div class="user-name mb-4">
-                            <h1 class="display-4 w-100">User Name</h1>
-                            <p class="display-4-sub-head">Country of origin</p>
+                            <h1 class="display-4 w-100">{{ user.username }}</h1>
+                            <p class="display-4-sub-head">{{ user.profile.country_of_origin }}</p>
                         </div>
                     </div>
                 </div>
                 <!-- User Info Section -->
                 <div class="col-md-8 w-100">
-                    <div class="profile-row w-100">
-                        <!-- Dive Info List -->
-                        <div class="dive-exp mt-5">
-                            <div class="col-md-12 user-info no-padding w-100">
-                                <div class="d-flex w-100">
-                                    <ul class="list-group w-50">
-                                        <li class="list-group-item">
-                                            <label for="buddyName">My buddy is:</label>
-                                            <input type="text" id="buddyName" class="form-control" readonly>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <label for="diveCount">Number of Dives so far:</label>
-                                            <input type="number" id="diveCount" class="form-control" readonly>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <label for="diveSchool">Dive School?</label>
-                                            <select id="diveSchool" class="form-control">
-                                                <option value="PADI">PADI</option>
-                                                <option value="SSI">SSI</option>
-                                            </select>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <label for="diveCertLevel">Dive certificate Level:</label>
-                                            <input type="text" id="diveCertLevel" class="form-control" placeholder="Enter certificate level">
-                                        </li>
-                                    </ul>
-                                    <ul class="list-group w-50">
-                                        <li class="list-group-item">
-                                            <label for="favDiveSite">Favourite Dive Site?</label>
-                                            <input type="text" id="favDiveSite" class="form-control" placeholder="Enter favourite dive site">
-                                        </li>
-                                        <li class="list-group-item">
-                                            <label for="nextDiveTrip">Next planned dive trip:</label>
-                                            <input type="date" id="nextDiveTrip" class="form-control">
-                                        </li>
-                                        <li class="list-group-item">
-                                            <label for="nextDiveLocation">Next Dive Trip location:</label>
-                                            <input type="text" id="nextDiveLocation" class="form-control" placeholder="Enter next dive trip location">
-                                        </li>
-                                        <li class="list-group-item">
-                                            <label for="trainingLocation">Where did you train?</label>
-                                            <input type="text" id="trainingLocation" class="form-control" placeholder="Enter training location">
-                                        </li>
-                                    </ul>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="profile-row w-100">
+                            <!-- Dive Info List -->
+                            <div class="dive-exp mt-5">
+                                <div class="col-md-12 user-info no-padding w-100">
+                                    <div class="d-flex w-100">
+                                        <!-- Render all form fields from the ProfileForm -->
+                                        {{ form.as_p }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- Biography Section -->
-                        <div class="row mt-4">
-                            <div class="col-md-12">
-                                <h3>User Biography</h3>
-                                <textarea class="form-control" rows="5">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</textarea>
-                            </div>
-                        </div>
-                    </div>
+                        <button type="submit" class="btn btn-primary mt-3">Save changes</button>
+                    </form>
                     <!-- Interactive Map Snapshot -->
                     <div class="map-snapshot mt-4 w-100">
                         <h3>Interactive Dive Map Snapshot</h3>

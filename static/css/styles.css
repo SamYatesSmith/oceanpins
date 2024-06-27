@@ -45,9 +45,26 @@
 /* Buttons */
 
 .btn-primary {
-    background-color: #D4AF37;
-    border-color:#0a4877;
+    background-color: #97AFB9;
+    border-color:#6B516D;
 }
+
+.btn-primary:hover {
+    background-color: #6B516D;
+    border-color:#97AFB9;
+}
+
+.btn-secondary {
+    background-color: #97AFB9;
+    border-color:#6B516D;
+}
+
+.btn-secondary:hover {
+    background-color: #6B516D;
+    border-color:#97AFB9;
+}
+
+
 
 /* Page backdrops */
 
@@ -258,31 +275,31 @@ main {
 /* Keyframes for the rotating border */
 @keyframes border-rotate {
     0% {
-        border-top-color: #D4AF37;
+        border-top-color: #6B516D;
         border-right-color: transparent;
         border-bottom-color: transparent;
         border-left-color: transparent;
     }
     25% {
         border-top-color: transparent;
-        border-right-color: #D4AF37;
+        border-right-color: #6B516D;
         border-bottom-color: transparent;
         border-left-color: transparent;
     }
     50% {
         border-top-color: transparent;
         border-right-color: transparent;
-        border-bottom-color: #D4AF37;
+        border-bottom-color: #6B516D;
         border-left-color: transparent;
     }
     75% {
         border-top-color: transparent;
         border-right-color: transparent;
         border-bottom-color: transparent;
-        border-left-color: #D4AF37;
+        border-left-color: #6B516D;
     }
     100% {
-        border-top-color: #D4AF37;
+        border-top-color: #6B516D;
         border-right-color: transparent;
         border-bottom-color: transparent;
         border-left-color: transparent;
@@ -293,11 +310,7 @@ main {
     transform: scale(1.2);
     background: transparent;
     color: white;
-}
-
-.hero .btn:hover {
     background: transparent;
-    color: white;
 }
 
 .btn-wide {
@@ -306,7 +319,7 @@ main {
 
 .hero .hero-text h1,
 .hero .hero-text p {
-    color: #D4AF37;
+    color: #fff;
 }
 
 .social-media a {
@@ -348,7 +361,7 @@ form input {
 form button {
     width: 100%;
     padding: 0.5rem;
-    background-color: #00796b;
+    background-color: #6B516D;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -356,7 +369,7 @@ form button {
 }
 
 form button:hover {
-    background-color: #0a4877;
+    background-color: #B5A7B6;
 }
 
 .login-background {
@@ -386,6 +399,36 @@ form button:hover {
     padding: 1rem;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* LOGIN / Sign-Up */
+
+.login-signup-background {
+    min-height: 100vh;
+    background-image: url('../images/breachingwhale.jpg');
+    background-size: cover;
+    background-position: right center !important;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-signup-contianer {
+    margin-top: 7%;
+    width: 60%;
+    max-width: 550px;
+    padding: 2rem 4rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.choice-container {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    background-color: #296073;
+    color: white;
+    font-family: 'Josefin Sans', sans-serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* interactive_map.html */
@@ -520,6 +563,7 @@ form button:hover {
     font-size: 1rem;
     cursor: pointer;
     Border-radius: 8px;
+    background-color: #97AFB9;
 }
 
 #toggleGuide p {
@@ -527,6 +571,11 @@ form button:hover {
     padding: 0;
     display: inline-block;
     margin-right: 10px;
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+#toggleGuide:hover {
+    background-color: #B5A7B6;
 }
 
 #toggleArrow {
@@ -582,7 +631,7 @@ form button:hover {
 }
 
 .image-container {
-    height: 100%; /* or set a specific height if needed */
+    height: 100%;
     background-image: url('../images/diverascending.jpg');
     background-size: cover;
     background-position: center;

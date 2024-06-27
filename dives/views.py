@@ -12,6 +12,7 @@ from django.views.decorators.http import require_POST
 from .models import DiveLog
 
 
+
 User = get_user_model()
 
 @login_required
@@ -56,7 +57,6 @@ def add_dive_log(request):
         close_connection()
 
 
-@login_required
 def home(request):
     return render(request, 'home.html')
 

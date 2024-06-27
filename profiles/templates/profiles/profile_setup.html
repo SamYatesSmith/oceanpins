@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Complete Profile Setup{% endblock %}
+
+{% block content %}
+<div class="profile-setup-form">
+    <h1 class="text-center mb-4">Complete Your Profile</h1>
+    <form method="post" class="w-50 mx-auto">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary btn-block">Save Profile</button>
+    </form>
+</div>
+{% endblock %}
