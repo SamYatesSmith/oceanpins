@@ -1,22 +1,21 @@
-# profiles/views.py
-from django.shortcuts import render, redirect
+import os
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
+from django.http import JsonResponse
 from .forms import CustomUserCreationForm, ProfileForm
 from .models import Profile
-import logging
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 
-logger = logging.getLogger(__name__)
 
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
-            # Automatically log the user in after registration
             login(request, user)
-            # Create a profile for the new user
             profile = Profile.objects.create(user=user)
             if profile:
                 logger.info(f"Profile created for user: {user.username}")
@@ -44,13 +43,12 @@ def profile_setup(request):
 
 @login_required
 def profile(request):
-    profile, created = Profile.objects.get_or_create(user=request.user)
+    user_profile = Profile.objects.get(user=request.user)
+    form = ProfileForm(instance=user_profile)
+
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=profile)
+        form = ProfileForm(request.POST, instance=user_profile)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Profile updated successfully.')
-            return redirect('profile')
-    else:
-        form = ProfileForm(instance=profile)
-    return render(request, 'profile.html', {'form': form})
+
+    return render(request, 'profiles/profile.html', {'form': form, 'profile': user_profile})

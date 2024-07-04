@@ -133,7 +133,7 @@ const initAutocomplete = () => {
 
 const addDiveLog = (location, diveLog, marker) => {
     if (!diveLog.date || !/^\d{4}-\d{2}-\d{2}$/.test(diveLog.date)) {
-        diveLog.date = new Date().toISOString().split('T')[0]; // Set to current date if not valid
+        diveLog.date = new Date().toISOString().split('T')[0];
     }
 
     diveLog.location = `${location.lat()}, ${location.lng()}`;
@@ -205,6 +205,9 @@ const addMarker = (location, diveLog) => {
         showConfirmationDialog(() => {
             removeMarker(marker, location);
         });
+    });
+
+    marker.addListener('dragend', () => {
     });
 
     markersArray.push(marker);
@@ -291,7 +294,7 @@ const removeMarker = (marker, location) => {
     console.log('Attempting to remove marker at location:', formattedLocation, 'for user:', user);
 
     const payload = { id: marker.diveLog.id, location: formattedLocation, user: user };
-    console.log('Payload being sent for removal:', payload);  // Log the payload
+    console.log('Payload being sent for removal:', payload);
 
     fetch('/dives/remove_dive_log/', {
         method: 'POST',
@@ -307,13 +310,14 @@ const removeMarker = (marker, location) => {
             console.log(`Marker at location ${formattedLocation} removed successfully.`);
             markerCluster.removeMarker(marker);
             markersArray = markersArray.filter(m => m !== marker);
-            marker.setMap(null);  // Ensure the marker is removed from the map
+            marker.setMap(null);
         } else {
             alert('Failed to remove dive log: ' + data.message);
         }
     })
     .catch(error => alert('Error: ' + error.message));
 };
+
 
 const showConfirmationDialog = (callback) => {
     let confirmationModal = document.getElementById('confirmationModal');
@@ -461,8 +465,25 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('contextmenu', function(event) {
         event.preventDefault();
     });
-});
 
+    document.getElementById('captureScreenshotButton').addEventListener('click', async () => {
+        const response = await fetch('/dives/capture_screenshot/');
+        if (response.ok) {
+            const data = await response.json();
+            const screenshotUrl = data.screenshot_url;
+            const snapshotImage = document.querySelector('.map-snapshot img');
+            if (snapshotImage) {
+                snapshotImage.src = screenshotUrl;
+            } else {
+                const img = document.createElement('img');
+                img.src = screenshotUrl;
+                document.querySelector('.map-snapshot').appendChild(img);
+            }
+        } else {
+            alert('Failed to capture screenshot.');
+        }
+    });
+});
 
 const loadGoogleMapsApi = () => new Promise((resolve, reject) => {
     const script = document.createElement('script');

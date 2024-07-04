@@ -196,7 +196,12 @@ main {
 }
 
 .hero-text {
-    margin-left: 10%;
+    margin-left: 3%;
+    font-size: 60px;
+}
+
+.hero-text h1 {
+    font-size: 60px;
 }
 
 .hero-buttons {
@@ -335,7 +340,7 @@ footer .social-media a {
 
 /* LOGIN */
 
-form {
+.loginForm {
     max-width: 400px;
     max-height: 500px;
     margin: 1.5rem auto;
@@ -345,12 +350,12 @@ form {
     overflow-y: auto;
 }
 
-form label {
+.loginForm label {
     display: block;
     margin: 1rem 0 0.5rem;
 }
 
-form input {
+.loginForm input {
     width: 100%;
     padding: 0.5rem;
     margin-bottom: 1rem;
@@ -358,7 +363,7 @@ form input {
     border-radius: 5px;
 }
 
-form button {
+.loginForm button {
     width: 100%;
     padding: 0.5rem;
     background-color: #6B516D;
@@ -368,7 +373,7 @@ form button {
     cursor: pointer;
 }
 
-form button:hover {
+.loginForm button:hover {
     background-color: #B5A7B6;
 }
 
@@ -412,6 +417,28 @@ form button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.form-group {
+    margin: 0;
+}
+
+.infoForm {
+    max-height: 450px;
+    margin: 1.5rem auto;
+    padding: 1rem;
+    padding-top: 0;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    overflow-y: auto;
+}
+
+.profileLabels {
+    margin: 0;
+    color: white;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 23px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .login-signup-contianer {
@@ -685,6 +712,11 @@ form button:hover {
     overflow-y: auto;
 }
 
+.profile-container .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .user-container {
     position: relative; 
     width: 100%;
@@ -715,12 +747,15 @@ form button:hover {
 }
 
 .mb-4 {
+    color: white;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 0;
     margin: 0;
+    padding-top: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .list-group-item {

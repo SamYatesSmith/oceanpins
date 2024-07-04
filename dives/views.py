@@ -1,4 +1,6 @@
+import os
 import json
+import asyncio
 from datetime import datetime
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render, redirect
@@ -9,11 +11,21 @@ from django.db.models import Count
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.http import require_POST
+from django.template.loader import render_to_string
+from django.conf import settings
 from .models import DiveLog
+import logging
 
-
-
+logger = logging.getLogger(__name__)
 User = get_user_model()
+
+@login_required
+def get_divelog_markers(request):
+    user = request.user
+    divelogs = DiveLog.objects.filter(user=user).values('location')
+    markers = [{"lat": float(dive['location'].split(',')[0]), "lng": float(dive['location'].split(',')[1])} for dive in divelogs if dive['location']]
+    return JsonResponse(markers, safe=False)
+
 
 @login_required
 def profile_view(request):
@@ -21,7 +33,6 @@ def profile_view(request):
     return render(request, 'profile.html')
 
 
-# Helper function to close the database connection
 def close_connection():
     from django.db import connection
     if connection.connection:
@@ -63,7 +74,8 @@ def home(request):
 
 @login_required
 def interactive_map(request):
-    dive_logs = DiveLog.objects.all().values('date', 'name', 'location', 'buddy', 'depth', 'temp', 'visibility', 'bottom_time', 'user_id')
+    user = request.user
+    dive_logs = DiveLog.objects.filter(user=user).values('date', 'name', 'location', 'buddy', 'depth', 'temp', 'visibility', 'bottom_time', 'user_id')
     dive_logs_json = json.dumps(list(dive_logs), cls=DjangoJSONEncoder)
 
     return render(request, 'interactive_map.html', {
@@ -96,7 +108,6 @@ def update_dive_log(request):
         return JsonResponse({'status': 'error', 'message': 'Dive log not found'}, status=404)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
 
 
 @csrf_exempt
@@ -142,14 +153,6 @@ def view_dive_logs(request):
     return JsonResponse({'dive_logs': data})
 
 
-@login_required
-def get_most_recent_buddy(request):
-    print("get_most_recent_buddy view called")  # Debugging statement
-    most_recent_buddy = DiveLog.objects.filter(user=request.user).order_by('-date').values('buddy').first()
-    print(f"most_recent_buddy: {most_recent_buddy}")  # Debugging statement
-    return JsonResponse({'most_recent_buddy': most_recent_buddy['buddy'] if most_recent_buddy else 'No data available'})
-
-
 def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -166,12 +169,14 @@ def login_signup_choice(request):
 
 
 @login_required
-def get_dive_count(request):
-    print("get_dive_count view called")  # Debugging statement
-    dive_count = DiveLog.objects.filter(user=request.user).count()
-    print(f"dive_count: {dive_count}")  # Debugging statement
-    return JsonResponse({'dive_count': dive_count}) 
-
-@login_required
 def profile_view(request):
-    return render(request, 'profile.html')
+    dive_logs = DiveLog.objects.filter(user=request.user).exclude(location__isnull=True).exclude(location__exact='').values('location')
+    dive_logs_list = list(dive_logs)
+    
+    logger.info("Dive logs being passed to template: %s", dive_logs_list)
+    
+    dive_logs_json = json.dumps(dive_logs_list, cls=DjangoJSONEncoder)
+    
+    return render(request, 'profile.html', {
+        'dive_logs': dive_logs_json,
+    })

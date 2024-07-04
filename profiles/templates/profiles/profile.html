@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="profile-background"></div>
+    <div class="profile-container">
+        <div class="profile-heading-fluid col-12">
+            <div class="profile-row">
+                <h1 class="profile-heading text-center">Your Dive Profile</h1>
+            </div>
+        </div>
+        <div class="user-container d-flex align-items-center justify-content-between">
+            <div class="row w-100">
+                <!-- Profile Picture Section -->
+                <div class="col-md-4 text-center w-100">
+                    <div class="mb-4">
+                        <div class="profile-picture">
+                            <img src="{% static 'images/user_default.png' %}" class="rounded-circle img-fluid" alt="User chosen image/photo">
+                        </div>
+                        <div class="user-name mb-4">
+                            <h1 class="display-4 w-100">{{ user.username }}</h1>
+                            <p class="display-4-sub-head">{{ user.profile.country_of_origin }}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- User Info Section -->
+                <div class="col-md-8">
+                    <form method="post" class="infoForm">
+                        {% csrf_token %}
+                        <h2 class="mb-4">Your Basic Dive Details</h2>
+                        <div class="profile-row">
+                            <!-- Dive Info List -->
+                            <div class="dive-exp mt-5">
+                                <div class="col-md-12 user-info no-padding">
+                                    <div class="d-flex flex-column">
+                                        {% for field in form %}
+                                            <div class="form-group row">
+                                                <label class="profileLabels col-sm-3 col-form-label">{{ field.label_tag }}</label>
+                                                <div class="col-sm-9">
+                                                    {{ field }}
+                                                    <small class="text-muted">{{ field.help_text }}</small>
+                                                    {% if field.errors %}
+                                                        <div class="invalid-feedback d-block">
+                                                            {{ field.errors }}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Save changes</button>
+                    </form>
+                    <!-- Interactive Map Snapshot -->
+                    <div class="map-snapshot mt-4 w-100">
+                        <h3>Interactive Dive Map Snapshot</h3>
+                        <div id="readonly-map" style="height: 300px; background-color: #e0f7fa;"></div>
+                        <a href="{% url 'interactive_map' %}" class="btn btn-primary mt-3">Go to Interactive Map</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&libraries=places"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        initMap();
+    });
+</script>
+<script src="{% static 'javascript/readonly_map.js' %}"></script>
+<script src="{% static 'javascript/profile.js' %}"></script>
+{% endblock %}
