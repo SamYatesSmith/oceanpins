@@ -465,24 +465,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('contextmenu', function(event) {
         event.preventDefault();
     });
-
-    document.getElementById('captureScreenshotButton').addEventListener('click', async () => {
-        const response = await fetch('/dives/capture_screenshot/');
-        if (response.ok) {
-            const data = await response.json();
-            const screenshotUrl = data.screenshot_url;
-            const snapshotImage = document.querySelector('.map-snapshot img');
-            if (snapshotImage) {
-                snapshotImage.src = screenshotUrl;
-            } else {
-                const img = document.createElement('img');
-                img.src = screenshotUrl;
-                document.querySelector('.map-snapshot').appendChild(img);
-            }
-        } else {
-            alert('Failed to capture screenshot.');
-        }
-    });
 });
 
 const loadGoogleMapsApi = () => new Promise((resolve, reject) => {

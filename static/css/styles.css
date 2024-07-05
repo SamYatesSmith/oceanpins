@@ -643,8 +643,6 @@ footer .social-media a {
     color: #D4AF37;
     box-sizing: border-box;
     font-size: 1rem;
-    margin-top: 25px;
-    margin-bottom: 25px;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -789,6 +787,32 @@ footer .social-media a {
     padding-left: 0;
     padding-right: 0;
 }
+
+/* Interactive Map Snapshot Styles */
+
+.map-snapshot {
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 10px;
+}
+
+.map-snapshot h3 {
+    padding-top: 5px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: white;
+    text-align: center;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#readonly-map {
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
 
 @media (max-width: 768px) {
     .map-container {
