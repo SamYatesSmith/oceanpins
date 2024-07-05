@@ -20,7 +20,7 @@ function initMap() {
             });
 
             new MarkerClusterer(map, markerObjects, {
-                imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+                imagePath: "https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"
             });
         });
 }

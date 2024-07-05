@@ -54,15 +54,47 @@ $(document).ready(function() {
     });
 });
 
+const loadGoogleMapsApi = () => new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&map_ids=23026dc1bc7a39cd&libraries=places,marker';
+    script.async = true;
+    script.defer = true;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('Failed to load Google Maps API'));
+    document.head.appendChild(script);
+});
 
-function initMap() {
+const createClusterContent = (count) => {
+    const div = document.createElement('div');
+    div.className = 'cluster-marker';
+    div.textContent = count;
+    div.style.backgroundColor = 'rgba(0, 123, 255, 0.6)';
+    div.style.borderRadius = '50%';
+    div.style.color = 'white';
+    div.style.width = '40px';
+    div.style.height = '40px';
+    div.style.display = 'flex';
+    div.style.alignItems = 'center';
+    div.style.justifyContent = 'center';
+    return div;
+};
+
+async function initMap() {
+    console.log('Initializing map');
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
     const mapDiv = document.getElementById('map');
     diveMap = new google.maps.Map(mapDiv, {
         center: { lat: 30.049, lng: 2.2277 },
         zoom: 2,
+        mapId: '23026dc1bc7a39cd',
         mapTypeId: google.maps.MapTypeId.HYBRID,
-        streetViewControl: false
+        streetViewControl: false,
+        tilt: 45,
+        heading: 90
     });
+
+    console.log('Map initialized with Map ID:', diveMap.mapId);
 
     diveMap.addListener('dblclick', debounce((event) => {
         const location = event.latLng;
@@ -101,8 +133,18 @@ function initMap() {
     initAutocomplete();
     loadDiveLogs();
 
-    markerCluster = new MarkerClusterer(diveMap, [], {
-        imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+    markerCluster = new markerClusterer.MarkerClusterer({ 
+        map: diveMap, 
+        markers: [], 
+        renderer: {
+            render: ({ count, position }) => {
+                return new AdvancedMarkerElement({
+                    position,
+                    content: createClusterContent(count),
+                });
+            },
+        },
+        algorithm: new markerClusterer.GridAlgorithm({ maxDistance: 100 }),
     });
 }
 
@@ -112,7 +154,7 @@ const handleZoomChange = () => {
         markerCluster.addMarkers(markersArray);
     } else {
         markerCluster.clearMarkers();
-        markersArray.forEach(marker => marker.setMap(diveMap));
+        markersArray.forEach(marker => marker.map = diveMap);
     }
 }
 
@@ -183,8 +225,12 @@ const loadDiveLogs = () => {
 
 
 const addMarker = (location, diveLog) => {
-    const marker = new google.maps.Marker({
+    const markerContent = document.createElement('div');
+    markerContent.innerHTML = '<img src="/static/images/markerPin.png" style="width: 80px; height: 80px;">'; 
+    const marker = new google.maps.marker.AdvancedMarkerElement({
         position: location,
+        map: diveMap,
+        content: markerContent
     });
 
     marker.diveLog = diveLog || {};
@@ -201,23 +247,40 @@ const addMarker = (location, diveLog) => {
         hideHoverWindow(marker);
     });
 
-    marker.addListener('rightclick', (event) => {
+    markerContent.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
         showConfirmationDialog(() => {
             removeMarker(marker, location);
         });
-    });
-
-    marker.addListener('dragend', () => {
     });
 
     markersArray.push(marker);
     if (diveMap.getZoom() <= 5) {
         markerCluster.addMarker(marker);
     } else {
-        marker.setMap(diveMap);
+        marker.map = diveMap;
     }
     
     return marker;
+};
+
+// Show Confirmation Dialog
+const showConfirmationDialog = (callback) => {
+    let confirmationModal = document.getElementById('confirmationModal');
+    if (!confirmationModal) {
+        console.error('Confirmation modal not found!');
+        return;
+    }
+
+    console.log('Displaying confirmation dialog');
+    $(confirmationModal).modal('show');
+
+    const confirmYesButton = document.getElementById('confirmYes');
+    confirmYesButton.onclick = () => {
+        console.log('Confirmation received');
+        $(confirmationModal).modal('hide');
+        callback();
+    };
 };
 
 const showHoverWindow = (marker) => {
@@ -317,47 +380,6 @@ const removeMarker = (marker, location) => {
     })
     .catch(error => alert('Error: ' + error.message));
 };
-
-
-const showConfirmationDialog = (callback) => {
-    let confirmationModal = document.getElementById('confirmationModal');
-    if (!confirmationModal) {
-        confirmationModal = document.createElement('div');
-        confirmationModal.id = 'confirmationModal';
-        confirmationModal.classList.add('modal', 'fade');
-        confirmationModal.setAttribute('tabindex', '-1');
-        confirmationModal.setAttribute('role', 'dialog');
-        confirmationModal.innerHTML = `
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Confirm Marker Removal</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Are you sure you want to remove this marker?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                        <button type="button" class="btn btn-primary" id="confirmYes">Yes</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(confirmationModal);
-    }
-
-    $(confirmationModal).modal('show');
-
-    const confirmYesButton = document.getElementById('confirmYes');
-    confirmYesButton.onclick = () => {
-        $(confirmationModal).modal('hide');
-        callback();
-    };
-};
-
 
 const updateDiveFormLocation = (location) => {
     const latLngStr = `${location.lat()}, ${location.lng()}`;
@@ -462,19 +484,15 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(() => initMap())
         .catch(error => alert('Error loading Google Maps: ' + error.message));
     
-    document.addEventListener('contextmenu', function(event) {
-        event.preventDefault();
-    });
-});
-
-const loadGoogleMapsApi = () => new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&libraries=places';
-    script.async = true;
-    script.defer = true;
-    script.onload = resolve;
-    script.onerror = () => reject(new Error('Failed to load Google Maps API'));
-    document.head.appendChild(script);
+    // Prevent context menu only for the map, not for markers
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
+        mapElement.addEventListener('contextmenu', function(event) {
+            if (event.target.tagName !== 'IMG' || !event.target.src.includes('markerPin.png')) {
+                event.preventDefault();
+            }
+        });
+    }
 });
 
 const debounce = (func, wait) => {

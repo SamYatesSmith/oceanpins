@@ -75,8 +75,11 @@ def home(request):
 @login_required
 def interactive_map(request):
     user = request.user
-    dive_logs = DiveLog.objects.filter(user=user).values('date', 'name', 'location', 'buddy', 'depth', 'temp', 'visibility', 'bottom_time', 'user_id')
+    dive_logs = DiveLog.objects.filter(user=user).values(
+        'date', 'name', 'location', 'buddy', 'depth', 'temp', 'visibility', 'bottom_time', 'user_id'
+        )
     dive_logs_json = json.dumps(list(dive_logs), cls=DjangoJSONEncoder)
+    logger.debug("Dive logs being passed to the template: %s", dive_logs_json)
 
     return render(request, 'interactive_map.html', {
         'dive_logs': dive_logs_json,
