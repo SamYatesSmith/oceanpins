@@ -50,11 +50,54 @@ $(document).ready(function() {
                 $guideCol.addClass('col-md-1').removeClass('col-md-2');
                 $mapCol.addClass('col-md-8').removeClass('col-md-7');
             }
+            setTimeout(() => {
+                google.maps.event.trigger(diveMap, 'resize');
+            }, 300);
         });
     });
 });
 
+const updateMapToolsHeight = () => {
+    const mapTools = document.querySelector('.map-tools');
+    if (mapTools) {
+        mapTools.style.height = 'calc(100vh - var(--header-height) - var(--footer-height) - 20px)';
+        mapTools.style.maxHeight = 'calc(100vh - var(--header-height) - var(--footer-height) - 20px)';
+        mapTools.style.overflowY = 'auto';
+    }
+}
+
+const resizeMap = () => {
+    if (diveMap) {
+        google.maps.event.trigger(diveMap, 'resize');
+        diveMap.setCenter({ lat: 30.149, lng: 17.041 });
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    clearLocalStorage();
+    loadGoogleMapsApi()
+        .then(() => {
+            initMap();
+            window.addEventListener('resize', resizeMap);
+        })
+        .catch(error => alert('Error loading Google Maps: ' + error.message));
+    
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
+        mapElement.addEventListener('contextmenu', function(event) {
+            if (event.target.tagName !== 'IMG' || !event.target.src.includes('markerPin.png')) {
+                event.preventDefault();
+            }
+        });
+    }
+});
+
 const loadGoogleMapsApi = () => new Promise((resolve, reject) => {
+    if (window.google && window.google.maps) {
+        resolve();
+        return;
+    }
+
     const script = document.createElement('script');
     script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&map_ids=23026dc1bc7a39cd&libraries=places,marker';
     script.async = true;
@@ -80,21 +123,18 @@ const createClusterContent = (count) => {
 };
 
 async function initMap() {
-    console.log('Initializing map');
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
     const mapDiv = document.getElementById('map');
     diveMap = new google.maps.Map(mapDiv, {
-        center: { lat: 30.049, lng: 2.2277 },
-        zoom: 2,
+        center: { lat: 30.149, lng: 17.041 },
+        zoom: 2.2,
         mapId: '23026dc1bc7a39cd',
         mapTypeId: google.maps.MapTypeId.HYBRID,
         streetViewControl: false,
         tilt: 45,
         heading: 90
     });
-
-    console.log('Map initialized with Map ID:', diveMap.mapId);
 
     diveMap.addListener('dblclick', debounce((event) => {
         const location = event.latLng;
@@ -109,13 +149,11 @@ async function initMap() {
         };
 
         const marker = addMarker(location, diveLog);
-
         updateDiveFormLocation(location);
         showDiveForm();
-
+        updateMapToolsHeight();
         document.getElementById('addDiveForm').onsubmit = (e) => {
             e.preventDefault();
-
             diveLog.date = document.getElementById('diveDate').value;
             diveLog.name = document.getElementById('diveName').value;
             diveLog.buddy = document.getElementById('diveBuddy').value;
@@ -123,8 +161,8 @@ async function initMap() {
             diveLog.temp = document.getElementById('waterTemp').value;
             diveLog.visibility = document.getElementById('visibility').value;
             diveLog.bottom_time = document.getElementById('bottomTime').value;
-
             addDiveLog(location, diveLog, marker);
+            e.stopPropagation();
         };
     }, 300));
 
@@ -151,12 +189,16 @@ async function initMap() {
 const handleZoomChange = () => {
     const currentZoom = diveMap.getZoom();
     if (currentZoom <= 5) {
-        markerCluster.addMarkers(markersArray);
+        if (markerCluster) {
+            markerCluster.addMarkers(markersArray);
+        }
     } else {
-        markerCluster.clearMarkers();
-        markersArray.forEach(marker => marker.map = diveMap);
+        if (markerCluster) {
+            markerCluster.clearMarkers();
+        }
+        markersArray.forEach(marker => marker.setMap(diveMap));
     }
-}
+};
 
 const initAutocomplete = () => {
     const input = document.getElementById('map-search');
@@ -225,12 +267,22 @@ const loadDiveLogs = () => {
 
 
 const addMarker = (location, diveLog) => {
+
     const markerContent = document.createElement('div');
     markerContent.innerHTML = '<img src="/static/images/markerPin.png" style="width: 80px; height: 80px;">'; 
     const marker = new google.maps.marker.AdvancedMarkerElement({
         position: location,
         map: diveMap,
-        content: markerContent
+        content: markerContent,
+        title: 
+`
+Dive Name: ${diveLog.name || 'N/A'}, Date: ${diveLog.date || 'N/A'}, 
+Buddy: ${diveLog.buddy || 'N/A'}, 
+Depth: ${diveLog.depth !== undefined ? diveLog.depth + ' meters' : 'N/A'}, 
+Temperature: ${diveLog.temp !== undefined ? diveLog.temp + ' °C' : 'N/A'}, 
+Visibility: ${diveLog.visibility !== undefined ? diveLog.visibility + ' meters' : 'N/A'}, 
+Bottom Time: ${diveLog.bottom_time !== undefined ? diveLog.bottom_time + ' minutes' : 'N/A'}
+`
     });
 
     marker.diveLog = diveLog || {};
@@ -239,15 +291,7 @@ const addMarker = (location, diveLog) => {
         showEditDiveForm(marker);
     });
 
-    marker.addListener('mouseover', () => {
-        showHoverWindow(marker);
-    });
-
-    marker.addListener('mouseout', () => {
-        hideHoverWindow(marker);
-    });
-
-    markerContent.addEventListener('contextmenu', (event) => {
+    marker.addListener('contextmenu', (event) => {
         event.preventDefault();
         showConfirmationDialog(() => {
             removeMarker(marker, location);
@@ -260,7 +304,7 @@ const addMarker = (location, diveLog) => {
     } else {
         marker.map = diveMap;
     }
-    
+
     return marker;
 };
 
@@ -272,7 +316,6 @@ const showConfirmationDialog = (callback) => {
         return;
     }
 
-    console.log('Displaying confirmation dialog');
     $(confirmationModal).modal('show');
 
     const confirmYesButton = document.getElementById('confirmYes');
@@ -282,35 +325,6 @@ const showConfirmationDialog = (callback) => {
         callback();
     };
 };
-
-const showHoverWindow = (marker) => {
-    const diveLog = marker.diveLog || {};
-    const contentString = `
-        <div>
-            <p><strong>Dive Name:</strong> ${diveLog.name || 'N/A'}</p>
-            <p><strong>Date:</strong> ${diveLog.date || 'N/A'}</p>
-            <p><strong>Location:</strong> ${diveLog.location || 'N/A'}</p>
-            <p><strong>Buddy:</strong> ${diveLog.buddy || 'N/A'}</p>
-            <p><strong>Depth:</strong> ${diveLog.depth !== undefined ? diveLog.depth + ' meters' : 'N/A'}</p>
-            <p><strong>Water Temp:</strong> ${diveLog.temp !== undefined ? diveLog.temp + ' °C' : 'N/A'}</p>
-            <p><strong>Visibility:</strong> ${diveLog.visibility !== undefined ? diveLog.visibility + ' meters' : 'N/A'}</p>
-            <p><strong>Bottom Time:</strong> ${diveLog.bottom_time !== undefined ? diveLog.bottom_time + ' minutes' : 'N/A'}</p>
-        </div>
-    `;
-    const infowindow = new google.maps.InfoWindow({
-        content: contentString,
-    });
-    infowindow.open(diveMap, marker);
-    marker.infowindow = infowindow;
-};
-
-
-const hideHoverWindow = (marker) => {
-    if (marker && marker.infowindow) {
-        marker.infowindow.close();
-        marker.infowindow = null;
-    }
-}
 
 const showEditDiveForm = (marker) => {
     const diveLog = marker.diveLog;
@@ -372,6 +386,7 @@ const removeMarker = (marker, location) => {
         if (data.status === 'success') {
             console.log(`Marker at location ${formattedLocation} removed successfully.`);
             markerCluster.removeMarker(marker);
+            marker.map = null;
             markersArray = markersArray.filter(m => m !== marker);
             marker.setMap(null);
         } else {
@@ -390,7 +405,11 @@ const updateDiveFormLocation = (location) => {
 const showDiveForm = () => {
     document.getElementById('initialImage').style.display = 'none';
     document.getElementById('randomImage').style.display = 'none';
-    document.getElementById('addDiveForm').style.display = 'block';
+    const addDiveForm = document.getElementById('addDiveForm');
+    if (addDiveForm) {
+        addDiveForm.style.display = 'block';
+        addDiveForm.style.position = 'relative';
+    }
 }
 
 const hideDiveForm = () => {
@@ -477,23 +496,6 @@ const updateDiveLog = (marker, updatedDiveLog) => {
     })
     .catch(error => alert('Error: ' + error.message));
 };
-
-document.addEventListener('DOMContentLoaded', () => {
-    clearLocalStorage();
-    loadGoogleMapsApi()
-        .then(() => initMap())
-        .catch(error => alert('Error loading Google Maps: ' + error.message));
-    
-    // Prevent context menu only for the map, not for markers
-    const mapElement = document.getElementById('map');
-    if (mapElement) {
-        mapElement.addEventListener('contextmenu', function(event) {
-            if (event.target.tagName !== 'IMG' || !event.target.src.includes('markerPin.png')) {
-                event.preventDefault();
-            }
-        });
-    }
-});
 
 const debounce = (func, wait) => {
     let timeout;

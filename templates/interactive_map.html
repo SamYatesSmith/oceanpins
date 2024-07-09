@@ -149,7 +149,7 @@
 <input type="hidden" id="userId" value="{{ user.id }}">
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        window.diveLogsData = JSON.parse('{{ dive_logs|escapejs }}');
+        window.diveLogsData = JSON.parse('{{ dive_logs|safe }}');
     });
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

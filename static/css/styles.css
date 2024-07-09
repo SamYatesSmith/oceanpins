@@ -460,6 +460,23 @@ footer .social-media a {
 
 /* interactive_map.html */
 
+.row.flex-grow-1 {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.col-md-2, .col-md-3, .col-md-7 {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.guide-container, .map-tools {
+    flex-grow: 1;
+    overflow-y: auto; /* Enable vertical scrolling for overflow */
+}
+
 .row {
     padding-top: 15px;
     padding-bottom: 15px;
@@ -489,12 +506,13 @@ footer .social-media a {
 }
 
 .map-container {
-    flex: 1;
-    flex-grow: 1;
     display: flex;
+    flex-grow: 1;
     overflow: hidden;
     padding-top: var(--header-height);
     padding-bottom: var(--footer-height);
+    position: relative;
+    height: calc(100vh - var(--header-height) - var(--footer-height));
 }
 
 .container-fluid.main {
@@ -627,16 +645,32 @@ footer .social-media a {
     padding-right: 15px;
 }
 
+.map-col {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
 #map {
+    height: 100%;
+    width: 100%;
     border-radius: 8px;
     box-shadow: 0 0 15px white;
     border: 2px solid white;
-    height: 100%;
-    width: 100%;
+    position: relative;
+}
+
+#map img {
+    pointer-events: all;
 }
 
 .addDiveForm {
     background-color: rgba(255, 255, 255, 0.3);
+    height: 100%;
+    max-height: 100%;
+    overflow-y: hidden;
 }
 
 .map-tools {
@@ -646,7 +680,9 @@ footer .social-media a {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    height: 100%;
+    height: calc(100vh - var(--header-height) - var(--footer-height));
+    max-height: calc(100vh - var(--header-height) - var(--footer-height));
+    overflow-y: auto;
 }
 
 .map-tools h5 {
