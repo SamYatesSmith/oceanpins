@@ -53,7 +53,7 @@
                 </div>
                 <div class="col-md-3 d-flex flex-column">
                     <div class="map-tools">
-                        <div id="initialImage" class="image-container img-fluid"></div>
+                        <div id="initialImage" class="image-container"></div>
                         <div id="confirmationMessage" class="confirmation-message" style="display: none;">
                             Your dive has been added to your profile map.
                         </div>
@@ -92,7 +92,7 @@
                                 <input type="number" class="form-control" id="bottomTime" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Save Dive</button>
-                            <img id="randomImage" src="" class="img-fluid" alt="Random Image" style="display: none;">
+                            <img id="randomImage" src='' class="img-fluid" alt="Random Image">
                         </form>
                     </div>
                 </div>
@@ -106,7 +106,7 @@
                     <div class="modal-header">
                         <h5 class="modal-title" id="diveCardModalLabel">Dive Details</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times</span>
+                            <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -148,8 +148,19 @@
 </div>
 <input type="hidden" id="userId" value="{{ user.id }}">
 <script>
+    const images = [
+        "{% static 'images/coral2.jpg' %}",
+        "{% static 'images/jellies.jpg' %}",
+        "{% static 'images/hero.jpg' %}",
+        "{% static 'images/openwater.jpg' %}",
+        "{% static 'images/underwater1.jpg' %}",
+        "{% static 'images/turtle.jpg' %}",
+        "{% static 'images/clownfish.jpg' %}",
+    ];
+</script>
+<script>
     document.addEventListener('DOMContentLoaded', () => {
-        window.diveLogsData = JSON.parse('{{ dive_logs|safe }}');
+        window.diveLogsData = JSON.parse('{{ dive_logs|escapejs }}');
     });
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

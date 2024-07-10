@@ -85,10 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapElement = document.getElementById('map');
     if (mapElement) {
         mapElement.addEventListener('contextmenu', function(event) {
-            if (event.target.tagName !== 'IMG' || !event.target.src.includes('markerPin.png')) {
                 event.preventDefault();
-            }
-        });
+            });
     }
 });
 
@@ -216,6 +214,7 @@ const initAutocomplete = () => {
 }
 
 const addDiveLog = (location, diveLog, marker) => {
+    hideRandomImage();
     if (!diveLog.date || !/^\d{4}-\d{2}-\d{2}$/.test(diveLog.date)) {
         diveLog.date = new Date().toISOString().split('T')[0];
     }
@@ -239,7 +238,7 @@ const addDiveLog = (location, diveLog, marker) => {
             marker.diveLog = diveLog;
             clearDiveForm();
             hideDiveForm();
-            showConfirmationMessage();
+            showConfirmationMessage('New marker added to the map');
         } else {
             alert('Failed to save dive log: ' + data.message);
         }
@@ -267,7 +266,6 @@ const loadDiveLogs = () => {
 
 
 const addMarker = (location, diveLog) => {
-
     const markerContent = document.createElement('div');
     markerContent.innerHTML = '<img src="/static/images/markerPin.png" style="width: 80px; height: 80px;">'; 
     const marker = new google.maps.marker.AdvancedMarkerElement({
@@ -291,7 +289,7 @@ Bottom Time: ${diveLog.bottom_time !== undefined ? diveLog.bottom_time + ' minut
         showEditDiveForm(marker);
     });
 
-    marker.addListener('contextmenu', (event) => {
+    markerContent.addEventListener('contextmenu', (event) => {
         event.preventDefault();
         showConfirmationDialog(() => {
             removeMarker(marker, location);
@@ -310,6 +308,7 @@ Bottom Time: ${diveLog.bottom_time !== undefined ? diveLog.bottom_time + ' minut
 
 // Show Confirmation Dialog
 const showConfirmationDialog = (callback) => {
+    hideRandomImage();
     let confirmationModal = document.getElementById('confirmationModal');
     if (!confirmationModal) {
         console.error('Confirmation modal not found!');
@@ -327,6 +326,7 @@ const showConfirmationDialog = (callback) => {
 };
 
 const showEditDiveForm = (marker) => {
+    hideRandomImage();
     const diveLog = marker.diveLog;
 
     const addDiveForm = document.getElementById('addDiveForm');
@@ -366,6 +366,7 @@ const showEditDiveForm = (marker) => {
 }
 
 const removeMarker = (marker, location) => {
+    hideRandomImage();
     const formattedLocation = formatLocation(location);
     const user = userId;
     console.log('Attempting to remove marker at location:', formattedLocation, 'for user:', user);
@@ -389,6 +390,7 @@ const removeMarker = (marker, location) => {
             marker.map = null;
             markersArray = markersArray.filter(m => m !== marker);
             marker.setMap(null);
+            showConfirmationMessage('Marker deleted successfully', showRandomImage);
         } else {
             alert('Failed to remove dive log: ' + data.message);
         }
@@ -414,7 +416,6 @@ const showDiveForm = () => {
 
 const hideDiveForm = () => {
     document.getElementById('addDiveForm').style.display = 'none';
-    showRandomImage();
 }
 
 const clearDiveForm = () => {
@@ -428,31 +429,91 @@ const clearDiveForm = () => {
     document.getElementById('bottomTime').value = '';
 }
 
-const showConfirmationMessage = () => {
+const showConfirmationMessage = (message, callback) => {
+    hideRandomImage();
     const messageContainer = document.getElementById('confirmationMessage');
+    const randomImage = document.getElementById('randomImage');
+
+    if (randomImage) {
+        randomImage.style.display = 'none';
+    }
+
     if (messageContainer) {
+        messageContainer.textContent = message;
         messageContainer.style.display = 'block';
         setTimeout(() => {
             messageContainer.style.display = 'none';
-        }, 5000);
+            if (typeof callback === 'function') {
+                setTimeout(callback, 3500);
+            }
+        }, 3500);
     }
+};
+
+function showRandomImage() {
+    console.log('showRandomImage called');
+
+    // Hide the initial image
+    const initialImage = document.getElementById('initialImage');
+    if (initialImage) {
+        initialImage.style.display = 'none';
+        console.log('initialImage hidden');
+    } else {
+        console.log('initialImage not found');
+    }
+
+    // Remove any existing randomImage
+    const existingRandomImage = document.getElementById('randomImage');
+    if (existingRandomImage) {
+        existingRandomImage.remove();
+        console.log('Existing randomImage removed');
+    }
+
+    setTimeout(() => {
+        const randomImage = document.createElement('img');
+        randomImage.id = 'randomImage';
+        randomImage.src = images[Math.floor(Math.random() * images.length)];
+        randomImage.classList.add('img-fluid');
+
+        const mapToolsDiv = document.querySelector('.map-tools');
+        if (mapToolsDiv) {
+            mapToolsDiv.appendChild(randomImage);
+            console.log('randomImage appended', randomImage);
+            setTimeout(() => {
+                randomImage.classList.add('show');
+            }, 50);
+        } else {
+            console.log('mapToolsDiv not found');
+        }
+    }, 3500); // Forced delay matching the confirmation message duration
 }
 
-const showRandomImage = () => {
-    const randomImage = document.getElementById('randomImage');
-    const images = [
-        '/static/images/coral2.jpg',
-        '/static/images/dolphins.jpg',
-        '/static/images/hero.jpg',
-        '/static/images/openwater.jpg',
-        '/static/images/underwater1.jpg',
-    ];
 
+const hideRandomImage = () => {
+    const randomImage = document.getElementById('randomImage');
     if (randomImage) {
-        const randomIndex = Math.floor(Math.random() * images.length);
-        randomImage.src = images[randomIndex];
-        randomImage.style.display = 'block';
+        randomImage.remove()
+        console.log('randomImage hidden');
     }
+};
+
+const confirmationMessage = document.getElementById('confirmationMessage');
+if (confirmationMessage) {
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'style') {
+                const display = window.getComputedStyle(confirmationMessage).display;
+                if (display !== 'none') {
+                    console.log('confirmationMessage is visible');
+                    showRandomImage();
+                }
+            }
+        });
+    });
+
+    observer.observe(confirmationMessage, { attributes: true });
+} else {
+    console.log('confirmationMessage not found');
 }
 
 document.getElementById('addDiveForm').onsubmit = (e) => {
@@ -470,9 +531,12 @@ document.getElementById('addDiveForm').onsubmit = (e) => {
         bottomTime: document.getElementById('bottomTime').value,
     };
     addDiveLog(location, diveLog);
+    showConfirmationMessage('New marker added to the map', showRandomImage);
 };
 
 const updateDiveLog = (marker, updatedDiveLog) => {
+    hideRandomImage();
+
     const payload = { id: marker.diveLog.id, ...updatedDiveLog };
     console.log('Payload being sent:', payload);
 
@@ -489,7 +553,7 @@ const updateDiveLog = (marker, updatedDiveLog) => {
         if (data.status === 'success') {
             marker.diveLog = { ...marker.diveLog, ...updatedDiveLog };
             hideDiveForm();
-            showConfirmationMessage();
+            showConfirmationMessage('Marker edited successfully');
         } else {
             alert('Failed to update dive log: ' + data.message);
         }

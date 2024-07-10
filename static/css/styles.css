@@ -32,7 +32,6 @@
 
 .guide-container h4 {
     font-family: 'Josefin Sans', sans-serif;
-    color: white;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
@@ -474,7 +473,7 @@ footer .social-media a {
 
 .guide-container, .map-tools {
     flex-grow: 1;
-    overflow-y: auto; /* Enable vertical scrolling for overflow */
+    overflow-y: auto;
 }
 
 .row {
@@ -483,10 +482,11 @@ footer .social-media a {
 }
 
 .map-background {
-    background-image: url('../images/deepblue.jpg');
+    background-color: #f1f1f5;
+    /* background-image: url('../images/deepblue.jpg');
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
+    background-repeat: no-repeat; */
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -534,7 +534,7 @@ footer .social-media a {
     margin: 0;
     margin-top: -10px;
     animation: fadeIn 1s ease-in-out;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); 
+    text-shadow: 2px 2px 4px #00043D; 
 }
 
 .heading-container::before {
@@ -561,7 +561,7 @@ footer .social-media a {
     height: auto;
     border-radius: 5px;
     width: 100%;
-    color: white;
+    color: #00043D
 }
 
 .head-row {
@@ -576,6 +576,7 @@ footer .social-media a {
     padding: 0;
     border: none;
     box-shadow: none;
+    color: #00043D;
 }
 
 .guide-container ol {
@@ -620,7 +621,7 @@ footer .social-media a {
 }
 
 #toggleGuide:hover {
-    background-color: #B5A7B6;
+    background-color: #00043D;
 }
 
 #toggleArrow {
@@ -639,6 +640,7 @@ footer .social-media a {
 }
 
 #guideList {
+    color: #00043D;
     display: none;
     padding-left: 20px;
     padding-top: 20px;
@@ -650,15 +652,13 @@ footer .social-media a {
     position: relative;
     width: 100%;
     height: 100%;
-    position: relative;
 }
 
 #map {
     height: 100%;
     width: 100%;
-    border-radius: 8px;
-    box-shadow: 0 0 15px white;
-    border: 2px solid white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #00043D;
     position: relative;
 }
 
@@ -674,12 +674,11 @@ footer .social-media a {
 }
 
 .map-tools {
-    color: #D4AF37;
     box-sizing: border-box;
     font-size: 1rem;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(0, 4, 61, 0.5);
     height: calc(100vh - var(--header-height) - var(--footer-height));
     max-height: calc(100vh - var(--header-height) - var(--footer-height));
     overflow-y: auto;
@@ -716,13 +715,28 @@ footer .social-media a {
 }
 
 #randomImage {
-    display: none;
+    height: 100%;
     width: 100%;
-    height: auto;
-    position: absolute;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    object-fit: cover !important;
+    position: relative;
     top: 0;
     left: 0;
-    z-index: 999;
+    z-index: 2000;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* profile.html CSS */
