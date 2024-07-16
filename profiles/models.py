@@ -11,7 +11,7 @@ class CustomUser(AbstractUser):
         return Profile.objects.get(user=self)
 
 class Profile(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='profile')
     dive_school = models.CharField(max_length=100, blank=True, null=True)
     cert_level = models.CharField(max_length=100, blank=True, null=True)
     fav_dive_site = models.CharField(max_length=100, blank=True, null=True)

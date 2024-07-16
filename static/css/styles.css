@@ -47,21 +47,21 @@
 
 .btn-primary {
     background-color: #97AFB9;
-    border-color:#6B516D;
+    border-color:goldenrod;
 }
 
 .btn-primary:hover {
-    background-color: #6B516D;
-    border-color:#97AFB9;
+    background-color: goldenrod;
+    border-color: #97AFB9;
 }
 
 .btn-secondary {
     background-color: #97AFB9;
-    border-color:#6B516D;
+    border-color:goldenrod;
 }
 
 .btn-secondary:hover {
-    background-color: #6B516D;
+    background-color: goldenrod;
     border-color:#97AFB9;
 }
 
@@ -119,7 +119,7 @@ main {
 }
 
 .logo-img {
-    height: 155px;
+    height: 90px;
 }
 
 .logo-container {
@@ -172,9 +172,9 @@ main {
     display: inline-block;
     width: 10px;
     height: 10px;
-    background-color: green;
+    background-color: rgb(10, 228, 10);
     border-radius: 50%;
-    box-shadow: 0 0 5px green;
+    box-shadow: 0 0 5px rgb(1, 250, 1);
     align-self: flex-start;
     margin-top: 16px;
 }
@@ -260,15 +260,7 @@ main {
 .wavy-text span {
     display: inline-block;
     transform: translateY(0);
-    transition: transform 0.3s;
-}
-
-.wavy-text:hover span {
     animation: wave-animation 0.4s ease-in-out forwards;
-}
-
-.wavy-text span:hover {
-    animation-iteration-count: 1;
 }
 
 /* Button Styles */
@@ -378,8 +370,18 @@ footer .social-media a {
 
 /* LOGIN */
 
+.login-title, .register-title {
+    font-size: 48px;
+    font-weight: 600;
+    text-align: center;
+    color: white;
+    font-family: "Merienda", cursive;;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 .loginForm {
-    max-width: 400px;
+    width: 100%;
+    max-width: 700px;
     max-height: 500px;
     margin: 1.5rem auto;
     padding: 1.5rem;
@@ -415,47 +417,7 @@ footer .social-media a {
     background-color: #B5A7B6;
 }
 
-.login-background {
-    min-height: 100vh;
-    background-image: url('../images/SeaImagery5.png');
-    background-size: cover;
-    background-position: right center !important;
-    background-repeat: no-repeat;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.login-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.login-form {
-    margin-top: 7%;
-    width: 60%;
-    max-width: 550px;
-    background-color: rgba(255, 255, 255, 0.3);
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
 /* LOGIN / Sign-Up */
-
-.login-signup-background {
-    min-height: 100vh;
-    background-image: url('../images/SeaImagery3.png');
-    background-size: cover;
-    background-position: right center !important;
-    background-repeat: no-repeat;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
 .form-group {
     margin: 0;
@@ -480,21 +442,52 @@ footer .social-media a {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.login-signup-contianer {
-    margin-top: 7%;
-    width: 60%;
-    max-width: 550px;
-    padding: 2rem 4rem;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+/* REGISTER */
+
+.register-background, .login-signup-background, .login-background  {
+    min-height: 100vh;
+    background-image: url('../images/SeaImagery5.png');
+    background-size: cover;
+    background-position: right center !important;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.choice-container {
+.register-container, .login-signup-container, .login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 900px;
+    padding: 20px;
+    border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    background-color: #296073;
-    color: white;
-    font-family: "Merienda", cursive;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.register-container {
+    padding: 0;
+}
+
+.register-form, .choice-container {
+    width: 90%;
+    max-width: 800px;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+/* Button styles */
+
+.btn-primary {
+    background-color: #97AFB9;
+    border-color: goldenrod;
+}
+
+.btn-primary:hover {
+    background-color: goldenrod;
+    border-color: #97AFB9;
 }
 
 /* interactive_map.html */
@@ -522,7 +515,6 @@ footer .social-media a {
 }
 
 .map-background {
-    background-color: #f1f1f5;
     background-image: url('../images/mapBackground.png');
     background-size: cover;
     background-position: center;
@@ -650,6 +642,7 @@ footer .social-media a {
     Border-radius: 8px;
     background-color: #97AFB9;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    border: 1px solid goldenrod;
 }
 
 #toggleGuide p {
@@ -661,7 +654,8 @@ footer .social-media a {
 }
 
 #toggleGuide:hover {
-    background-color: #0b0b25
+    background-color: goldenrod;
+    border: 1px solid white;
 }
 
 #toggleArrow {
@@ -732,7 +726,7 @@ footer .social-media a {
 
 .image-container {
     height: 100%;
-    background-image: url('../images/diverascending.jpg');
+    background-image: url('../images/cartographyTools.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -840,6 +834,7 @@ footer .social-media a {
 
 .mb-4 {
     font-family: "Merienda", cursive;
+    font-size: 48px;
     color: white;
     width: 100%;
     display: flex;

@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Syncopate:wght@400;700&family=Merienda:wght@300..900&display=swap" rel="stylesheet">
+    <link rel="icon" href="{% static 'images/favicon/favicon.ico' %}" type="image/x-icon">
 </head>
 
 <body>
@@ -20,7 +21,7 @@
             <div class="row w-100 align-items-center">
                 <div class="col d-flex logo-container">
                     <a href="{% url 'home' %}" class="text-white text-decoration-none"></a>
-                    <img src="{% static 'images/logo1.png' %}" alt="Ocean Pins Logo" class="logo-img">
+                    <img src="{% static 'images/oceanPinsLogo.png' %}" alt="Ocean Pins Logo" class="logo-img">
                 </div>
                 <div class="col-8 d-flex justify-content-center align-items-center">
                     <nav>
@@ -31,7 +32,7 @@
                         </ul>
                     </nav>
                 </div>
-                <div class="col d-flex align-items-center justify-content-end login-container">
+                <div class="col d-flex align-items-center justify-content-end">
                     {% if user.is_authenticated %}
                         <div class="d-flex align-items-center">
                             <div class="status-indicator"></div>
