@@ -51,7 +51,7 @@ $(document).ready(function() {
                 $mapCol.addClass('col-md-8').removeClass('col-md-7');
             }
             setTimeout(() => {
-                google.maps.event.trigger(diveMap, 'resize');
+                resizeMap();
             }, 300);
         });
     });
@@ -181,6 +181,10 @@ async function initMap() {
             },
         },
         algorithm: new markerClusterer.GridAlgorithm({ maxDistance: 100 }),
+    });
+
+    google.maps.event.addListener(markerCluster, 'clusterclick', function(cluster) {
+        diveMap.fitBounds(cluster.getBounds());
     });
 }
 
@@ -405,12 +409,17 @@ const updateDiveFormLocation = (location) => {
 }
 
 const showDiveForm = () => {
-    document.getElementById('initialImage').style.display = 'none';
-    document.getElementById('randomImage').style.display = 'none';
+    const initialImage = document.getElementById('initialImage');
+    const randomImage = document.getElementById('randomImage');
     const addDiveForm = document.getElementById('addDiveForm');
+
+    if (initialImage) initialImage.style.display = 'none';
+    if (randomImage) randomImage.style.display = 'none';
     if (addDiveForm) {
         addDiveForm.style.display = 'block';
         addDiveForm.style.position = 'relative';
+    } else {
+        console.error('addDiveForm element not found');
     }
 }
 
