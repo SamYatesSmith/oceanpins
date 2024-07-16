@@ -136,9 +136,9 @@ LOGOUT_REDIRECT_URL = 'home'
 # Cloudinary settings
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': env('CLOUDINARY_API_KEY'),
-    'API_SECRET': env('CLOUDINARY_API_SECRET')
+    'CLOUD_NAME': env('dt6dg1u1o'),
+    'API_KEY': env('149872526841283'),
+    'API_SECRET': env('5eJ5RBTpugjHOBaC7Ywirr7HRdE')
 }
 
 DOMAIN_NAME = env('DOMAIN_NAME', default='http://localhost:8000')
