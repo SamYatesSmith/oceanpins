@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser, Profile
+from .models import CustomUser, Profile, Dive
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -28,7 +28,7 @@ class ProfileForm(forms.ModelForm):
         fields = [
             'dive_school', 'cert_level', 'fav_dive_site', 
             'next_dive_trip_date', 'next_dive_location', 
-            'training_location', 'biography'
+            'training_location', 'biography', 'profile_pic'
         ]
         widgets = {
             'dive_school': forms.Select(attrs={'class': 'form-control'}),
@@ -38,3 +38,8 @@ class ProfileForm(forms.ModelForm):
             'training_location': forms.TextInput(attrs={'class': 'form-control'}),
             'biography': forms.Textarea(attrs={'class': 'form-control'}),
         }
+
+class DiveForm(forms.ModelForm):
+    class Meta:
+        model = Dive
+        fields = ['title', 'description', 'image']

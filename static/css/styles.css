@@ -230,7 +230,7 @@ main {
     margin-left: 3%;
     font-size: 60px;
     color: white;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
@@ -709,6 +709,7 @@ footer .social-media a {
 
 .map-tools {
     box-sizing: border-box;
+    color: white;
     font-size: 1rem;
     padding: 20px;
     border-radius: 8px;
@@ -871,13 +872,28 @@ footer .social-media a {
 }
 
 .profile-picture {
-    max-width: 250px;
+    width: 300px;
+    height: 300px;
+    overflow: hidden;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    border: 0.5px solid goldenrod;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .user-info {
     padding-left: 0;
     padding-right: 0;
 }
+
+/* Image Section - profile */
+
+/* static/css/styles.css */
+
+
 
 /* Interactive Map Snapshot Styles */
 

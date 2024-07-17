@@ -49,11 +49,26 @@ def profile(request):
     form = ProfileForm(instance=user_profile)
 
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=request.user.profile)
+        form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Profile picture updated successfully.')
+            return redirect('profile')
 
     return render(request, 'profiles/profile.html', {'form': form, 'profile': user_profile})
+
+@login_required
+def profile_picture_upload(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile picture updated successfully.')
+            return redirect('profile')
+    else:
+        form = ProfileForm(instance=request.user.profile)
+    
+    return render(request, 'profiles/profile.html', {'form': form})
 
 @login_required
 def profile_view(request):

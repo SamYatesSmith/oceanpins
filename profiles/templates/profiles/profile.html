@@ -17,17 +17,16 @@
                 <div class="col-md-4 text-center w-100">
                     <div class="mb-4">
                         <div class="profile-picture">
-                            <img src="{% static 'images/user_default.png' %}" class="rounded-circle img-fluid" alt="User chosen image/photo">
+                            <img src="{{ user.profile.profile_pic.url }}" class="rounded-circle img-fluid" alt="User chosen image/photo">
                         </div>
-                        <div class="user-name mb-4">
+                        <div class="user-name mb-4 mt-4">
                             <h1 class="display-4 w-100">{{ user.username }}</h1>
-                            <p class="display-4-sub-head">{{ user.profile.country_of_origin }}</p>
                         </div>
                     </div>
                 </div>
                 <!-- User Info Section -->
                 <div class="col-md-8">
-                    <form method="post" class="infoForm">
+                    <form method="post" enctype="multipart/form-data" class="infoForm">
                         {% csrf_token %}
                         <h2 class="mb-4">Your Basic Dive Details</h2>
                         <div class="profile-row">
@@ -57,7 +56,7 @@
                     </form>
                     <!-- Interactive Map Snapshot -->
                     <div class="map-snapshot mt-4 w-100">
-                        <h3>Interactive Dive Map Snapshot</h3>
+                        <h3>Dive Map Snapshot</h3>
                         <div id="readonly-map" style="height: 400px"></div>
                         <a href="{% url 'interactive_map' %}" class="btn btn-primary mt-3">Go to Interactive Map</a>
                     </div>
@@ -70,9 +69,23 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&map_ids=23026dc1bc7a39cd&libraries=places,marker"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        initMap();
+        if (typeof initMap === "function") {
+            initMap();
+        }
+
+        var editButton = document.getElementById('edit-profile-pic-btn');
+        var form = document.getElementById('edit-profile-pic-form');
+
+        if (editButton && form) {
+            editButton.addEventListener('click', function() {
+                if (form.style.display === 'none') {
+                    form.style.display = 'block';
+                } else {
+                    form.style.display = 'none';
+                }
+            });
+        }
     });
 </script>
 <script src="{% static 'javascript/readonly_map.js' %}"></script>
-<script src="{% static 'javascript/profile.js' %}"></script>
 {% endblock %}
