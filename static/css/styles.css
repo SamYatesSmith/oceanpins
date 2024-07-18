@@ -203,7 +203,7 @@ main {
 .hero {
     position: relative;
     height: 100vh;
-    background-image: url('../images/seaBackground1.png');
+    background-image: url('{% static "images/seaBackground1.png" %}');
     background-size: cover;
     background-position: center;
 }
@@ -446,7 +446,7 @@ footer .social-media a {
 
 .register-background, .login-signup-background, .login-background  {
     min-height: 100vh;
-    background-image: url('../images/SeaImagery5.png');
+    background-image: url('{% static "images/SeaImagery5.png" %}');
     background-size: cover;
     background-position: right center !important;
     background-repeat: no-repeat;
@@ -515,7 +515,7 @@ footer .social-media a {
 }
 
 .map-background {
-    background-image: url('../images/mapBackground.png');
+    background-image: url('{% static "images/mapBackground.png" %}');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -727,7 +727,7 @@ footer .social-media a {
 
 .image-container {
     height: 100%;
-    background-image: url('../images/cartographyTools.png');
+    background-image: url('{% static "images/cartographyTools.png" %}');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -782,7 +782,7 @@ footer .social-media a {
     z-index: -1;
     width: 100%;
     height: 100%;
-    background-image: url('../images/profileBackground.png');
+    background-image: urlurl('{% static "images/profileBackground.png" %}');
     background-size: cover;
     background-position: center;
 }
