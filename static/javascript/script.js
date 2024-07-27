@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const wavyTextElements = document.querySelectorAll('.wavy-text');
+    const wavyTextElements = document.querySelectorAll('.wavy-container');
 
     function applyWavyEffect() {
         wavyTextElements.forEach(element => {

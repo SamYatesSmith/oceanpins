@@ -18,7 +18,7 @@
 
     <header class="header-overlay">
         <div class="container-fluid">
-            <div class="row w-100 align-items-center">
+            <div class="row align-items-center">
                 <div class="col d-flex logo-container">
                     <a href="{% url 'home' %}" class="text-white text-decoration-none">
                         <img src="{% static 'images/oceanPinsLogo.png' %}" alt="Ocean Pins Logo" class="logo-img">
@@ -32,10 +32,13 @@
                             <li class="nav-item"><a href="{% url 'profile' %}" class="nav-link">Profile</a></li>
                         </ul>
                     </nav>
+                    <button class="hamburger-menu" id="hamburgerMenu">
+                        <i class="fas fa-bars"></i>
+                    </button>
                 </div>
                 <div class="col d-flex align-items-center justify-content-end">
                     {% if user.is_authenticated %}
-                        <div class="d-flex align-items-center">
+                        <div class="status d-flex align-items-center">
                             <div class="status-indicator"></div>
                             <div class="user-info">
                                 <span class="nav-link text-white">{{ user.username }} - Logged In</span>
@@ -43,10 +46,32 @@
                             </div>
                         </div>
                     {% else %}
-                        <a href="{% url 'login_signup_choice' %}" class="nav-link text-white">Login/Sign Up</a>
+                        <div class="login-signup">
+                            <a href="{% url 'login_signup_choice' %}" class="nav-link text-white">Login/Sign Up</a>
+                        </div>
                     {% endif %}
                 </div>
             </div>
+        </div>
+        <div class="hamburger-dropdown align-items-right" id="hamburgerDropdown">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a href="{% url 'home' %}" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="{% url 'interactive_map' %}" class="nav-link">Interactive Map</a></li>
+                <li class="nav-item"><a href="{% url 'profile' %}" class="nav-link">Profile</a></li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="status-indicator"></div>
+                            <span class="nav-link text-white">{{ user.username }} - Logged In</span>
+                        </div>
+                        <a href="{% url 'logout' %}" class="nav-link text-white">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a href="{% url 'login_signup_choice' %}" class="nav-link">Login/Sign Up</a>
+                    </li>
+                {% endif %}
+            </ul>
         </div>
     </header>
 
@@ -70,5 +95,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{% static 'javascript/script.js' %}"></script>
+    <script>
+        document.getElementById('hamburgerMenu').addEventListener('click', function() {
+            var dropdown = document.getElementById('hamburgerDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+    </script>
 </body>
 </html>
