@@ -73,7 +73,7 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 body {
@@ -98,6 +98,7 @@ main {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 0 10px;
 }
 
 .footer-overlay {
@@ -115,13 +116,33 @@ main {
 }
 
 .header-overlay .logo-container {
+    flex: 0 0 auto;
+    flex: 1;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
 }
 
 .header-overlay .container-fluid {
-    padding: 0;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-overlay .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 auto;
+}
+
+.header-overlay .hamburger-dropdown {
+    display: none !important;
+    position: fixed;
+    top: var(--header-height);
+    right: 0;
+    left: 0;
+    background: rgba(19, 17, 17, 0.9);
 }
 
 .logo-img {
@@ -135,20 +156,15 @@ main {
     height: var(--header-height);
 }
 
-.header-overlay .logo {
-    margin-left: 5%;
-}
-
-.header-overlay .logo a {
-    text-decoration: none;
-    font-size: 1.5rem;
-}
-
-.header-overlay .nav {
+.header-overlay .main-nav {
     list-style: none;
     display: flex;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 .header-overlay .nav-item {
@@ -173,36 +189,32 @@ main {
     -webkit-text-stroke: 0.2px goldenrod;
 }
 
-.header-overlay .login-signup {
-    margin-right: 5%;
-}
-
 .header-overlay .status {
     display: flex;
     align-items: center;
     justify-content: center;
     width: auto;
     height: 64px;
+    margin-left: auto;
 }
 
 .status-indicator {
-    display: inline-block;
     width: 10px;
     height: 10px;
     background-color: rgb(10, 228, 10);
     border-radius: 50%;
     box-shadow: 0 0 5px rgb(1, 250, 1);
-    align-self: flex-start;
-    margin-top: 16px;
 }
 
 .user-info {
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
 }
 
-.logout-button {
+.logout {
     margin-left: 15px;
     font-size: 12px;
     color: #bbb;
@@ -210,7 +222,7 @@ main {
     text-decoration: none;
 }
 
-.logout-button:hover {
+.logout:hover {
     color: #999;
     text-decoration: underline;
 }
@@ -408,26 +420,22 @@ footer .social-media a {
     background: none;
     border: none;
     cursor: pointer;
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.header-overlay .col-8 {
-    position: relative;
-    display: flex;
-    justify-content: flex-end;
 }
 
 .hamburger-dropdown {
-    display: none;
-    position: absolute;
+    display: block !important;
+    position: fixed;
     top: 90px;
     right: 0;
     left: 0;
     background: rgba(19, 17, 17, 0.9);
-    z-index: 999;
+    z-index: 1500 !important;
+}
+
+.hamburger-dropdown.show {
+    display: block !important;
+    overflow: auto;
+    z-index: 2000 !important;
 }
 
 .hamburger-dropdown .nav {
@@ -450,6 +458,11 @@ footer .social-media a {
 
 .hamburger-dropdown .nav-item .logout-button {
     margin-left: auto;
+}
+
+.hamburger-dropdown .nav-link {
+    color: white;
+    padding: 1rem;
 }
 
 /* LOGIN */
@@ -961,11 +974,6 @@ footer .social-media a {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
-.user-info {
-    padding-left: 0;
-    padding-right: 0;
-}
-
 /* Interactive Map Snapshot Styles */
 
 .map-snapshot {
@@ -994,103 +1002,147 @@ footer .social-media a {
 
 /* MEDIA QUERIES */
 
-@media (max-width: 608px) {
+@media (max-width: 550px) {
 
-    .hero .hero-text .ocean-text {
-        display: block;
-        font-size: 2rem;
-    }
-    .hero .hero-text .pins-text {
-        display: block;
-        font-size: 2rem;
-    }
-    .logo-container {
-        margin-left: 25px !important;
-    }
-}
+    @media (max-width: 550px) {
+        .wavy-text {
+            display: inline-block;
+            max-height: 60px;
+        }
+    
+        .wavy-container1,
+        .wavy-container2 {
+            display: block;
+            max-height: 60px;
+        }
 
-@media (max-width: 768px) {
-    /* .heading-container .text-left {
+        .hero-buttons .btn {
+            transform: scale(0.7);
+        }
+    }
+
+    .hero-text h1 {
+        font-size: 40px;
         text-align: center;
     }
 
-    .heading-container.mb-3 {
-        margin-bottom: 1rem;
-    } */
-
-    /* .hero .hero-text h1 {
-        font-size: 2rem;
-        text-align: center;
-    } */
+    .display-4 {
+        margin-bottom: 60px;
+    }
 }
 
-@media (max-width: 769px) {
-    .map-container {
-        padding: 0.5rem;
-    }
-
-    .map {
-        height: 60vh;
-    }
+@media (max-width: 850px) {
 
     .hamburger-menu {
-        display: block;
+        display: block !important;
     }
-    
-    .nav {
+
+    .header-overlay .status {
         display: none !important;
     }
-}
 
-@media (min-width: 769px) {
-    /* .hamburger-dropdown {
+    .main-nav {
         display: none !important;
-    } */
-}
+    }
 
-@media (min-width: 769px) {
-    .user-info {
+    .header-overlay .hamburger-menu {
+        display: block !important;
+        position: relative; 
+        right: 0; 
+        top: 0;
+        transform: none;
+        margin-left: auto;
+        z-index: 1002;
+    }
+
+    .header-overlay .container-fluid {
         display: flex;
         align-items: center;
+        justify-content: space-between;
+    }
+
+    .header-overlay .row {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .header-overlay .logo-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .header-overlay .hamburger-dropdown {
+        display: none;
+        position: fixed;
+        top: var(--header-height); 
+        right: 0;
+        left: 0;
+        background: rgba(19, 17, 17, 0.9);
+        z-index: 2000;
+    }
+
+    .header-overlay .hamburger-dropdown.show {
+        display: block !important;
+    }
+
+    .header-overlay .hamburger-dropdown .dropdown-nav {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         justify-content: center;
-        width: 167px;
-        height: 64px;
+        height: calc(35vh - var(--header-height));
+        padding: 0;
+        margin: 0;
+    }
+
+    .header-overlay .hamburger-dropdown .nav-item {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header-overlay .hamburger-dropdown .nav-item:last-child {
+        border-bottom: none;
+    }
+
+    .hero-text {
+        letter-spacing: 0;
+    }
+
+    .hero-text h1 {
+        font-size: 60px;
+        text-align: center;
+    }
+
+    .display-4 {
+        margin-bottom: 50px;
     }
 }
 
-@media (max-width: 1056px) {
+@media (min-width: 851px) {
+
     .hamburger-menu {
-        display: block;
-    }
-
-    .nav {
         display: none !important;
     }
 
-    .status {
+    .header-overlay .status {
+        display: flex !important;
+    }
+
+    .main-nav {
+        display: flex !important;
+    }
+
+    .header-overlay .hamburger-dropdown {
         display: none !important;
     }
+} 
 
-    .header-overlay {
-        width: 100%;
-        justify-content: flex-end;
-    }
-
-    /* .logo-container {
-        margin-left: 50px;
-    } */
-
-    .hamburger-dropdown {
-        display: block;
-    }
-
-    .header-overlay {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+@media (min-width: 1056px) {
 
     .header-overlay .nav {
-        flex-direction: row;
         justify-content: center;
         width: 100%;
     }
@@ -1101,23 +1153,6 @@ footer .social-media a {
 
     .heading-container .mb-3 {
         margin-bottom: 1rem;
-    }
-
-    .login-signup {
-        display: none;
-    }
-
-    .hamburger-dropdown .login-signup {
-        display: block;
-        width: 100%;
-        text-align: center;
-        margin-top: 10px;
-    }
-}
-
-@media (min-width: 1057px) {
-    .hamburger-dropdown {
-        display: none !important;
     }
 }
 
@@ -1141,7 +1176,6 @@ footer .social-media a {
     .hero .hero-text {
         margin: 40px 0 100px 0;
         padding: 0;
-        font-size: 40px;
     }
 
     .hero-text p {
