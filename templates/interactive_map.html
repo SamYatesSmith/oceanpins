@@ -5,141 +5,143 @@
 
 {% block content %}
 <div class="map-background">
-    <div class="map-container">
-        <div class="container-fluid main">
-            <div class="row head-row">
-                <div class="col-md-6">
-                    <div class="heading-container text-left">
-                        <h1>Dive Map</h1>
+    <div class="main-content">
+        <div class="map-container">
+            <div class="container-fluid main">
+                <div class="row head-row">
+                    <div class="col-md-6 col-12">
+                        <div class="heading-container d-flex align-items-center justify-content-center">
+                            <h1>Dive Map</h1>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12 d-flex align-items-center justify-content-center">
+                        <div class="form-group w-100 mb-0">
+                            <input id="map-search" class="form-control" type="text" placeholder="Search for a location">
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-3 d-flex align-items-center justify-content-center">
-                    <div class="form-group w-100 mb-0">
-                        <input id="map-search" class="form-control" type="text" placeholder="Search for a location">
-                    </div>
-                </div>
-                <div class="col-md-3 d-flex align-items-center justify-content-center">
-                    <div class="heading-container text-center full-width">
-                        <h5>Add your Dive details below once you've added your map marker</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="row flex-grow-1">
-                <div class="col-md-2 guide-col">
-                    <div class="guide-container">
+                <div class="row head-row">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
                         <button class="btn btn-secondary" type="button" id="toggleGuide" aria-expanded="false" aria-controls="guideList">
                             <p>Map Help</p>
                             <span id="toggleArrow" class="arrow-right"></span>
                         </button>
-                        <div id="guideList" class="collapse">
-                            <h4 class="guide-list-head">How to Use the Map:</h4>
-                            <ol class="guide-list">
-                                <li>Double click to add a pin.</li>
-                                <li>Fill out the form.</li>
-                                <li>Save the dive details.</li>
-                                <li>Right click on the added pin to remove it.</li>
-                                <li>Zoom in and out using mouse jogwheel, or buttons provided.</li>
-                                <li>Use search feature provided to quickly find your dive area.</li>
-                                <li>Hover your mouse over your marker to see its details.</li>
-                                <li>left-click on your marker to adjsut its details, remember to save when you're finished.</li>
-                            </ol>
+                    </div>
+                </div>
+                <div class="row flex-grow-1">
+                    <div class="col-md-2 guide-col">
+                        <div class="guide-container">
+                            <div id="guideList" class="collapse">
+                                <h4 class="guide-list-head">How to Use the Map:</h4>
+                                <ol class="guide-list">
+                                    <li>Double click to add a pin.</li>
+                                    <li>Fill out the form.</li>
+                                    <li>Save the dive details.</li>
+                                    <li>Right click on the added pin to remove it.</li>
+                                    <li>Zoom in and out using mouse jogwheel, or buttons provided.</li>
+                                    <li>Use search feature provided to quickly find your dive area.</li>
+                                    <li>Hover your mouse over your marker to see its details.</li>
+                                    <li>left-click on your marker to adjsut its details, remember to save when you're finished.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 d-flex map-col">
+                        <div id="map" class="flex">
+                            <!-- Placeholder for the interactive map -->
+                        </div>
+                        <div id="mapHelpContainer" class="map-help-container"></div>
+                    </div>
+                    <div class="col-md-3 d-flex flex-column map-tools-container">
+                        <div class="map-tools">
+                            <div id="initialImage" class="image-container"></div>
+                            <div id="confirmationMessage" class="confirmation-message" style="display: none;">
+                                Your dive has been added to your profile map.
+                            </div>
+                            <form id="addDiveForm" style="display: none;">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="diveDate">Date</label>
+                                    <input type="date" class="form-control" id="diveDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="diveName">Dive Name</label>
+                                    <input type="text" class="form-control" id="diveName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="diveLocation">Location</label>
+                                    <input type="text" class="form-control" id="diveLocation" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="diveBuddy">Dive Buddy</label>
+                                    <input type="text" class="form-control" id="diveBuddy" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="diveDepth">Depth (m)</label>
+                                    <input type="number" class="form-control" id="diveDepth" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="waterTemp">Water Temp (°C)</label>
+                                    <input type="number" class="form-control" id="waterTemp" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="visibility">Visibility (m)</label>
+                                    <input type="number" class="form-control" id="visibility" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bottomTime">Bottom Time</label>
+                                    <input type="number" class="form-control" id="bottomTime" required>
+                                </div>
+                                <button type="submit" class="mapToolsSave btn-primary">Save Dive</button>
+                                <img id="randomImage" src='' class="img-fluid" alt="Random Image">
+                            </form>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-7 d-flex map-col">
-                    <div id="map" class="flex">
-                        <!-- Placeholder for the interactive map -->
-                    </div>
-                </div>
-                <div class="col-md-3 d-flex flex-column">
-                    <div class="map-tools">
-                        <div id="initialImage" class="image-container"></div>
-                        <div id="confirmationMessage" class="confirmation-message" style="display: none;">
-                            Your dive has been added to your profile map.
+            </div>
+        
+            <!-- Dive Details Modal -->
+            <div class="modal fade" id="diveCardModal" tabindex="-1" role="dialog" aria-labelledby="diveCardModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="diveCardModalLabel">Dive Details</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
-                        <form id="addDiveForm" style="display: none;">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <label for="diveDate">Date</label>
-                                <input type="date" class="form-control" id="diveDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="diveName">Dive Name</label>
-                                <input type="text" class="form-control" id="diveName" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="diveLocation">Location</label>
-                                <input type="text" class="form-control" id="diveLocation" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="diveBuddy">Dive Buddy</label>
-                                <input type="text" class="form-control" id="diveBuddy" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="diveDepth">Depth (m)</label>
-                                <input type="number" class="form-control" id="diveDepth" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="waterTemp">Water Temp (°C)</label>
-                                <input type="number" class="form-control" id="waterTemp" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="visibility">Visibility (m)</label>
-                                <input type="number" class="form-control" id="visibility" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="bottomTime">Bottom Time</label>
-                                <input type="number" class="form-control" id="bottomTime" required>
-                            </div>
-                            <button type="submit" class="mapToolsSave btn-primary">Save Dive</button>
-                            <img id="randomImage" src='' class="img-fluid" alt="Random Image">
-                        </form>
+                        <div class="modal-body">
+                            <p id="diveNameDetail"></p>
+                            <p id="diveLocationDetail"></p>
+                            <p id="diveDateDetail"></p>
+                            <p id="diveDepthDetail"></p>
+                            <p id="diveBuddyDetail"></p>
+                            <p id="waterTempDetail"></p>
+                            <p id="visibilityDetail"></p>
+                            <p id="bottomTimeDetail"></p>
+                            <div id="diveGallery" class="d-flex flex-wrap"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    
-        <!-- Dive Details Modal -->
-        <div class="modal fade" id="diveCardModal" tabindex="-1" role="dialog" aria-labelledby="diveCardModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="diveCardModalLabel">Dive Details</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p id="diveNameDetail"></p>
-                        <p id="diveLocationDetail"></p>
-                        <p id="diveDateDetail"></p>
-                        <p id="diveDepthDetail"></p>
-                        <p id="diveBuddyDetail"></p>
-                        <p id="waterTempDetail"></p>
-                        <p id="visibilityDetail"></p>
-                        <p id="bottomTimeDetail"></p>
-                        <div id="diveGallery" class="d-flex flex-wrap"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Confirmation Modal -->
-        <div id="confirmationModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Confirm Marker Removal</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Are you sure you want to remove this marker?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                        <button type="button" class="btn btn-primary" id="confirmYes">Yes</button>
+            <!-- Confirmation Modal -->
+            <div id="confirmationModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirm Marker Removal</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to remove this marker?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                            <button type="button" class="btn btn-primary" id="confirmYes">Yes</button>
+                        </div>
                     </div>
                 </div>
             </div>

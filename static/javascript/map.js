@@ -30,46 +30,84 @@ const clearLocalStorage = () => {
 
 $(document).ready(function() {
     $('#toggleGuide').click(function() {
-        var $guideContainer = $('.guide-container');
-        var $guideList = $('#guideList');
+        var $mapHelpContainer = $('#mapHelpContainer');
         var $toggleArrow = $('#toggleArrow');
-        var $guideCol = $('.guide-col');
-        var $mapCol = $('.map-col');
 
-        $guideList.slideToggle(300, function() {
-            if ($guideList.is(':visible')) {
-                $guideContainer.addClass('expanded');
+        $mapHelpContainer.slideToggle(300, function() {
+            if ($mapHelpContainer.is(':visible')) {
                 $toggleArrow.removeClass('arrow-right').addClass('arrow-down');
                 $('#toggleGuide').attr('aria-expanded', 'true');
-                $guideCol.addClass('col-md-2').removeClass('col-md-1');
-                $mapCol.addClass('col-md-7').removeClass('col-md-8');
             } else {
-                $guideContainer.removeClass('expanded');
                 $toggleArrow.removeClass('arrow-down').addClass('arrow-right');
                 $('#toggleGuide').attr('aria-expanded', 'false');
-                $guideCol.addClass('col-md-1').removeClass('col-md-2');
-                $mapCol.addClass('col-md-8').removeClass('col-md-7');
             }
-            setTimeout(() => {
-                resizeMap();
-            }, 300);
         });
+    });
+
+    // Copy content from guideList to mapHelpContainer
+    $('#mapHelpContainer').html($('#guideList').html());
+
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
+        mapElement.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+        });
+    }
+
+    // Function to apply column layout and handle scroll behavior
+    const applyColumnLayout = () => {
+        if (window.innerWidth <= 1200) {
+            $('.row.head-row').css({ 'flex-direction': 'column', 'align-items': 'center' });
+            $('.col-md-2, .col-md-3, .col-md-7').css({ 'width': '100%', 'max-width': '100%', 'margin-bottom': '20px' });
+            $('.map-container').css({ 'flex-direction': 'column', 'height': 'auto' });
+            $('.main-content').css({ 'overflow-y': 'auto', 'height': 'auto' });
+            $('#toggleGuide').css({ 'width': '50%', 'max-width': '400px', 'margin': '0 auto' });
+        } else {
+            $('.row.head-row').css({ 'flex-direction': '', 'align-items': '' });
+            $('.col-md-2, .col-md-3, .col-md-7').css({ 'width': '', 'max-width': '', 'margin-bottom': '' });
+            $('.map-container').css({ 'flex-direction': '', 'height': '' });
+            $('.main-content').css({ 'overflow-y': '', 'height': '' });
+            $('#toggleGuide').css({ 'width': '50%', 'max-width': '400px', 'margin': '0 auto' });
+        }
+    };
+
+    // Handle responsive changes
+    const handleResponsiveChanges = () => {
+        applyColumnLayout();
+    };
+
+    // Initial layout adjustment
+    handleResponsiveChanges();
+
+    // Adjust layout on window resize
+    $(window).resize(function() {
+        handleResponsiveChanges();
     });
 });
 
 const updateMapToolsHeight = () => {
     const mapTools = document.querySelector('.map-tools');
     if (mapTools) {
-        mapTools.style.height = 'calc(100vh - var(--header-height) - var(--footer-height) - 20px)';
-        mapTools.style.maxHeight = 'calc(100vh - var(--header-height) - var(--footer-height) - 20px)';
-        mapTools.style.overflowY = 'auto';
+        if (window.innerWidth <= 1200) {
+            mapTools.style.height = 'auto';
+            mapTools.style.maxHeight = '40vh';
+            mapTools.style.marginBottom = '20px';
+        } else {
+            mapTools.style.height = 'calc(100vh - var(--header-height) - var(--footer-height) - 20px)';
+            mapTools.style.maxHeight = 'calc(100vh - var(--header-height) - var(--footer-height) - 20px)';
+            mapTools.style.overflowY = 'auto';
+        }
     }
-}
+};
 
 const resizeMap = () => {
     if (diveMap) {
         google.maps.event.trigger(diveMap, 'resize');
-        diveMap.setCenter({ lat: 30.149, lng: 17.041 });
+        const bounds = new google.maps.LatLngBounds();
+        markersArray.forEach(marker => {
+            bounds.extend(marker.getPosition());
+        });
+        diveMap.fitBounds(bounds);
     }
 };
 
@@ -120,7 +158,7 @@ const createClusterContent = (count) => {
     return div;
 };
 
-async function initMap() {
+const initMap = async () => {
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
     const mapDiv = document.getElementById('map');
@@ -131,7 +169,9 @@ async function initMap() {
         mapTypeId: google.maps.MapTypeId.HYBRID,
         streetViewControl: false,
         tilt: 45,
-        heading: 90
+        heading: 90,
+        gestureHandling: 'auto',
+        draggable: true,
     });
 
     diveMap.addListener('dblclick', debounce((event) => {
