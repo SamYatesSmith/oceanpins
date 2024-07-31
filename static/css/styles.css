@@ -241,6 +241,9 @@ main {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .hero .overlay {
@@ -275,6 +278,7 @@ main {
 
 .hero-text h1 {
     font-size: 90px;
+    justify-content: flex-start;
 }
 
 .hero-buttons {
@@ -1091,10 +1095,15 @@ footer .social-media a {
     .hero-text h1 {
         font-size: 40px;
         text-align: center;
+        justify-content: center;
     }
 
     .display-4 {
         margin-bottom: 60px;
+    }
+
+    .wavy-container1 {
+        margin-left: 1.5rem;
     }
 }
 
@@ -1107,6 +1116,10 @@ footer .social-media a {
 }
 
 @media (max-width: 850px) {
+
+    .lead {
+        font-family: 'Josefin Sans', sans-serif;
+    }
 
     .hamburger-menu {
         display: block !important;
@@ -1256,6 +1269,10 @@ footer .social-media a {
         padding-bottom: var(--footer-height);
         height: auto;
     }
+
+    .hero-text h1 {
+        justify-content: center;
+    }
     
     .hero .hero-text {
         margin: 40px 0 100px 0;
@@ -1271,7 +1288,7 @@ footer .social-media a {
     }
 }
 
-@media (min-width: 1301px) {
+/* @media (min-width: 1301px) {
     .hero .hero-content {
         padding-top: 0;
         padding-bottom: 0;
@@ -1281,7 +1298,7 @@ footer .social-media a {
     .display-4 {
         justify-content: flex-start;
     }
-}
+} */
 
 /* INTERACTIVE MAP MQ's */
 
