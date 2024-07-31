@@ -132,9 +132,13 @@ USE_L10N = True
 USE_TZ = True
 
 LOGIN_URL = 'login'
-
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+# Session settings
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 60 * 60
+SESSION_SAVE_EVERY_REQUEST = True
 
 # Cloudinary settings
 

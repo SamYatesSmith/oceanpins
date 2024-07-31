@@ -552,7 +552,7 @@ footer .social-media a {
 
 .register-background, .login-signup-background, .login-background  {
     min-height: 100vh;
-    background-image: url('../images/SeaImagery5.png');
+    background-image: url('https://res.cloudinary.com/dt6dg1u1o/image/upload/v1721147192/static/images/SeaImagery5.b28517dc7199.png'); 
     background-size: cover;
     background-position: right center !important;
     background-repeat: no-repeat;
@@ -604,7 +604,7 @@ footer .social-media a {
 }
 
 .map-background {
-    background-image: url('../images/mapBackground.png');
+    background-image: url('https://res.cloudinary.com/dt6dg1u1o/image/upload/v1721147185/static/images/mapBackground.f8edfe2751ef.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -882,7 +882,7 @@ footer .social-media a {
 
 .image-container {
     height: 100%;
-    background-image: url('../images/cartographyTools.png');
+    background-image: url('https://res.cloudinary.com/dt6dg1u1o/image/upload/v1721147183/static/images/cartographyTools.5968555205ef.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -937,7 +937,7 @@ footer .social-media a {
     z-index: -1;
     width: 100%;
     height: 100%;
-    background-image: url('../images/profileBackground.png');
+    background-image: url('https://res.cloudinary.com/dt6dg1u1o/image/upload/v1721147187/static/images/profileBackground.aa094db34850.png');
     background-size: cover;
     background-position: center;
 }

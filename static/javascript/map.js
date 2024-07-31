@@ -297,6 +297,15 @@ const addDiveLog = (location, diveLog, marker) => {
         if (data.status === 'success') {
             diveLog.id = data.dive_log;
             marker.diveLog = diveLog;
+            marker.title = 
+            `
+            Dive Name: ${diveLog.name || 'N/A'}, Date: ${diveLog.date || 'N/A'}, 
+            Buddy: ${diveLog.buddy || 'N/A'}, 
+            Depth: ${diveLog.depth !== undefined ? diveLog.depth + ' meters' : 'N/A'}, 
+            Temperature: ${diveLog.temp !== undefined ? diveLog.temp + ' °C' : 'N/A'}, 
+            Visibility: ${diveLog.visibility !== undefined ? diveLog.visibility + ' meters' : 'N/A'}, 
+            Bottom Time: ${diveLog.bottom_time !== undefined ? diveLog.bottom_time + ' minutes' : 'N/A'}
+            `;
             clearDiveForm();
             hideDiveForm();
             showConfirmationMessage('New marker added to the map');
@@ -352,7 +361,7 @@ const addLongPressListener = (element, callback) => {
 //Fucntionality to Add a marker to the map and create a " diveLog "
 const addMarker = (location, diveLog) => {
     const markerContent = document.createElement('div');
-    markerContent.innerHTML = '<img src="/static/images/markerPin.png" style="width: 80px; height: 80px;">'; 
+    markerContent.innerHTML = '<img src="https://res.cloudinary.com/dt6dg1u1o/image/upload/v1721147192/static/images/markerPin.bbdb126a6f0c.png" style="width: 80px; height: 80px;">'; 
     const marker = new google.maps.marker.AdvancedMarkerElement({
         position: location,
         map: diveMap,
