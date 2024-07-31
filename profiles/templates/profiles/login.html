@@ -18,15 +18,15 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-                <form method="post" class="loginForm border p-4 rounded bg-white">
+                <form method="post" class="loginForm border p-4 rounded bg-white" autocomplete="off">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" id="username" name="username" class="form-control" placeholder="Username">
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Username" autocomplete="new-username">
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Password">
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Password" autocomplete="new-password">
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Login</button>
                     <button type="submit" class="btn btn-primary btn-block">Register</button>

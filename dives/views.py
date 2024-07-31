@@ -120,7 +120,7 @@ def remove_dive_log(request):
         data = json.loads(request.body)
         dive_log_id = data.get('id')
         user = request.user
-        
+
         if not dive_log_id:
             return JsonResponse({'status': 'success', 'message': 'Marker without ID removed successfully'})
 
@@ -162,7 +162,14 @@ def signup(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Your account has been created successfully. Please log in.')
             return redirect('login')
+        else:
+            for field in form:
+                for error in field.errors:
+                    messages.error(request, f"{field.label}: {error}")
+            for error in form.non_field_errors():
+                messages.error(request, error)
     else:
         form = UserCreationForm()
     return render(request, 'profiles/signup.html', {'form': form})

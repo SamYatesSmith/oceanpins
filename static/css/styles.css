@@ -356,31 +356,31 @@ main {
 /* Keyframes for the rotating border */
 @keyframes border-rotate {
     0% {
-        border-top-color: #6B516D;
+        border-top-color: goldenrod;
         border-right-color: transparent;
         border-bottom-color: transparent;
         border-left-color: transparent;
     }
     25% {
         border-top-color: transparent;
-        border-right-color: #6B516D;
+        border-right-color: goldenrod;
         border-bottom-color: transparent;
         border-left-color: transparent;
     }
     50% {
         border-top-color: transparent;
         border-right-color: transparent;
-        border-bottom-color: #6B516D;
+        border-bottom-color: goldenrod;
         border-left-color: transparent;
     }
     75% {
         border-top-color: transparent;
         border-right-color: transparent;
         border-bottom-color: transparent;
-        border-left-color: #6B516D;
+        border-left-color: goldenrod;
     }
     100% {
-        border-top-color: #6B516D;
+        border-top-color: goldenrod;
         border-right-color: transparent;
         border-bottom-color: transparent;
         border-left-color: transparent;
@@ -406,17 +406,19 @@ main {
 }
 
 .social-media a {
-    color: #fff;
+    color: goldenrod;
     font-size: 24px;
 }
 
 footer .social-media a {
     margin: 0 1rem;
-    color: #fff;
+    color: goldenrod;
     text-decoration: none;
 }
 
 .login-signup {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 19px;
     display: block;
 }
 
@@ -1066,7 +1068,7 @@ footer .social-media a {
 
 /* MEDIA QUERIES */
 
-/* HOME MQ's */
+/* BASE MQ's */
 
 @media (max-width: 550px) {
 
@@ -1099,6 +1101,10 @@ footer .social-media a {
 
     .hamburger-menu {
         display: block !important;
+    }
+
+    .login-signup {
+        display: none;
     }
 
     .header-overlay .status {
@@ -1201,6 +1207,11 @@ footer .social-media a {
 
     .header-overlay .hamburger-dropdown {
         display: none !important;
+    }
+    .header-overlay .container-fluid {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 } 
 
