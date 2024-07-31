@@ -22,8 +22,13 @@
     font-weight: 600;
     letter-spacing: 0.3em;
     color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     -webkit-text-stroke: 0.2px goldenrod;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+    margin-top: 50px;
 }
 
 .hero .btn {
@@ -38,7 +43,7 @@
 }
 
 .heading-container, .profile-heading {
-    font-family: "Merienda", cursive;;
+    font-family: "Merienda", cursive;
     font-weight: 400;
     font-style: normal;
 }
@@ -261,6 +266,10 @@ main {
     color: white;
     letter-spacing: 0.05em;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.lead {
+    margin-top: 50px;
 }
 
 .hero-text h1 {
@@ -792,9 +801,22 @@ footer .social-media a {
     box-sizing: border-box;
 }
 
+.guide-list-head {
+    font-size: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .guide-list {
     list-style-type: decimal;
     padding-left: 20px;
+    font-size: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 2;
 }
 
 .map-col {
@@ -1235,6 +1257,10 @@ footer .social-media a {
         padding-bottom: 0;
         height: 100%;
     }
+
+    .display-4 {
+        justify-content: flex-start;
+    }
 }
 
 /* INTERACTIVE MAP MQ's */
@@ -1253,6 +1279,16 @@ footer .social-media a {
     .heading-container h1 {
         text-align: center !important;
     }
+
+    .guide-list-head {
+        font-size: 1.5rem;
+    }
+
+    .guide-list {
+        font-size: 1rem;
+        line-height: 1.4;
+        align-items: flex-start;
+    }
 }
 
 @media (max-width: 767px) {
@@ -1265,6 +1301,16 @@ footer .social-media a {
     .main-content {
         overflow-y: auto;
         height: auto;
+    }
+
+    .guide-list-head {
+        font-size: 1.75rem;
+    }
+
+    .guide-list {
+        font-size: 1.25rem;
+        line-height: 1.5;
+        align-items: flex-start;
     }
 }
 
@@ -1299,6 +1345,16 @@ footer .social-media a {
         align-items: center;
         justify-content: center;
         width: 100%;
+    }
+
+    .guide-list-head {
+        font-size: 2rem;
+    }
+
+    .guide-list {
+        font-size: 1.5rem;
+        line-height: 1.6;
+        align-items: flex-start;
     }
 }
 
@@ -1340,6 +1396,16 @@ footer .social-media a {
         align-items: center;
         justify-content: center;
         /* padding: 25px; */
+    }
+
+    .guide-list-head {
+        font-size: 2.5rem;
+    }
+
+    .guide-list {
+        font-size: 1.75rem;
+        line-height: 1.8;
+        align-items: flex-start;
     }
 
     .row.flex-grow-1 {

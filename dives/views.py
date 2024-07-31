@@ -120,8 +120,9 @@ def remove_dive_log(request):
         data = json.loads(request.body)
         dive_log_id = data.get('id')
         user = request.user
+        
         if not dive_log_id:
-            return JsonResponse({'status': 'error', 'message': 'Invalid data received: Missing ID'}, status=400)
+            return JsonResponse({'status': 'success', 'message': 'Marker without ID removed successfully'})
 
         dive_log = DiveLog.objects.filter(id=dive_log_id, user=user)
         if dive_log.exists():

@@ -8,6 +8,7 @@ if (userIdElement) {
     userId = userIdElement.value;
 }
 
+// Function to get a cookie value by name
 const getCookie = (name) => {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -23,12 +24,14 @@ const getCookie = (name) => {
 
 const csrftoken = getCookie('csrftoken');
 
+// Function to clear local and session storage
 const clearLocalStorage = () => {
     localStorage.clear();
     sessionStorage.clear();
 }
 
 $(document).ready(function() {
+    // Toggle guide section visibility on button click
     $('#toggleGuide').click(function() {
         var $mapHelpContainer = $('#mapHelpContainer');
         var $toggleArrow = $('#toggleArrow');
@@ -49,6 +52,7 @@ $(document).ready(function() {
 
     const mapElement = document.getElementById('map');
     if (mapElement) {
+        // Prevent default context menu on the map
         mapElement.addEventListener('contextmenu', function(event) {
             event.preventDefault();
         });
@@ -85,6 +89,7 @@ $(document).ready(function() {
     });
 });
 
+// Update mapTools height based on screen size
 const updateMapToolsHeight = () => {
     const mapTools = document.querySelector('.map-tools');
     if (mapTools) {
@@ -100,12 +105,15 @@ const updateMapToolsHeight = () => {
     }
 };
 
+// Resize the map and fit bounds to markers
 const resizeMap = () => {
     if (diveMap) {
         google.maps.event.trigger(diveMap, 'resize');
         const bounds = new google.maps.LatLngBounds();
         markersArray.forEach(marker => {
-            bounds.extend(marker.getPosition());
+            if (marker instanceof google.maps.Marker) {
+                bounds.extend(marker.getPosition());
+            }
         });
         diveMap.fitBounds(bounds);
     }
@@ -122,12 +130,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const mapElement = document.getElementById('map');
     if (mapElement) {
+        // Prevent default context menu on the map
         mapElement.addEventListener('contextmenu', function(event) {
                 event.preventDefault();
             });
     }
 });
 
+// Load Google Maps API
 const loadGoogleMapsApi = () => new Promise((resolve, reject) => {
     if (window.google && window.google.maps) {
         resolve();
@@ -143,6 +153,7 @@ const loadGoogleMapsApi = () => new Promise((resolve, reject) => {
     document.head.appendChild(script);
 });
 
+// Create content for cluster markers
 const createClusterContent = (count) => {
     const div = document.createElement('div');
     div.className = 'cluster-marker';
@@ -158,6 +169,7 @@ const createClusterContent = (count) => {
     return div;
 };
 
+// Initialize the map and add event listeners
 const initMap = async () => {
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
@@ -174,6 +186,7 @@ const initMap = async () => {
         draggable: true,
     });
 
+    // Add event listener for double click to add marker
     diveMap.addListener('dblclick', debounce((event) => {
         const location = event.latLng;
         const diveLog = {
@@ -209,6 +222,7 @@ const initMap = async () => {
     initAutocomplete();
     loadDiveLogs();
 
+    // Initialize marker cluster
     markerCluster = new markerClusterer.MarkerClusterer({ 
         map: diveMap, 
         markers: [], 
@@ -228,6 +242,7 @@ const initMap = async () => {
     });
 }
 
+// Handle map zoom change event
 const handleZoomChange = () => {
     const currentZoom = diveMap.getZoom();
     if (currentZoom <= 5) {
@@ -242,6 +257,7 @@ const handleZoomChange = () => {
     }
 };
 
+// Initialize place autocomplete for search input
 const initAutocomplete = () => {
     const input = document.getElementById('map-search');
     const autocomplete = new google.maps.places.Autocomplete(input);
@@ -257,6 +273,7 @@ const initAutocomplete = () => {
     });
 }
 
+// Add a new dive log to the server
 const addDiveLog = (location, diveLog, marker) => {
     hideRandomImage();
     if (!diveLog.date || !/^\d{4}-\d{2}-\d{2}$/.test(diveLog.date)) {
@@ -290,10 +307,12 @@ const addDiveLog = (location, diveLog, marker) => {
     .catch(error => alert('Error: ' + error.message));
 };
 
+// Format location as a string
 const formatLocation = (location) => {
     return `${location.lat().toFixed(6)}, ${location.lng().toFixed(6)}`;
 }
 
+// Load dive logs from the server
 const loadDiveLogs = () => {
     fetch('/dives/view_dive_logs/')
         .then(response => response.json())
@@ -308,7 +327,29 @@ const loadDiveLogs = () => {
         .catch(error => alert('Error loading dive logs: ' + error.message));
 };
 
+// Mobile functionality to delete marker
+const LONG_PRESS_DURATION = 800;
 
+const addLongPressListener = (element, callback) => {
+    let timer;
+
+    element.addEventListener('touchstart', (event) => {
+        event.preventDefault();
+        timer = setTimeout(() => {
+            callback(event);
+        }, LONG_PRESS_DURATION);
+    });
+
+    element.addEventListener('touchend', (event) => {
+        clearTimeout(timer);
+    });
+
+    element.addEventListener('touchmove', (event) => {
+        clearTimeout(timer);
+    });
+};
+
+//Fucntionality to Add a marker to the map and create a " diveLog "
 const addMarker = (location, diveLog) => {
     const markerContent = document.createElement('div');
     markerContent.innerHTML = '<img src="/static/images/markerPin.png" style="width: 80px; height: 80px;">'; 
@@ -350,7 +391,7 @@ Bottom Time: ${diveLog.bottom_time !== undefined ? diveLog.bottom_time + ' minut
     return marker;
 };
 
-// Show Confirmation Dialog
+// Show confirmation dialog for marker deletion
 const showConfirmationDialog = (callback) => {
     hideRandomImage();
     let confirmationModal = document.getElementById('confirmationModal');
@@ -369,6 +410,7 @@ const showConfirmationDialog = (callback) => {
     };
 };
 
+// On command, raise editing procedure for existing dive logs.
 const showEditDiveForm = (marker) => {
     hideRandomImage();
     const diveLog = marker.diveLog;
@@ -409,13 +451,19 @@ const showEditDiveForm = (marker) => {
     };
 }
 
+// Functionality to remove markers from users Interactive Map and server
 const removeMarker = (marker, location) => {
     hideRandomImage();
     const formattedLocation = formatLocation(location);
     const user = userId;
     console.log('Attempting to remove marker at location:', formattedLocation, 'for user:', user);
 
-    const payload = { id: marker.diveLog.id, location: formattedLocation, user: user };
+    const payload = { location: formattedLocation, user: user };
+
+    if (marker.diveLog.id) {
+        payload.id = marker.diveLog.id;
+    }
+
     console.log('Payload being sent for removal:', payload);
 
     fetch('/dives/remove_dive_log/', {
@@ -434,6 +482,7 @@ const removeMarker = (marker, location) => {
             marker.map = null;
             markersArray = markersArray.filter(m => m !== marker);
             marker.setMap(null);
+            hideDiveForm();
             showConfirmationMessage('Marker deleted successfully', showRandomImage);
         } else {
             alert('Failed to remove dive log: ' + data.message);
@@ -442,12 +491,14 @@ const removeMarker = (marker, location) => {
     .catch(error => alert('Error: ' + error.message));
 };
 
+// Update dive form location input
 const updateDiveFormLocation = (location) => {
     const latLngStr = `${location.lat()}, ${location.lng()}`;
     const diveLocation = document.getElementById('diveLocation');
     if (diveLocation) diveLocation.value = latLngStr;
 }
 
+// Show the dive form
 const showDiveForm = () => {
     const initialImage = document.getElementById('initialImage');
     const randomImage = document.getElementById('randomImage');
@@ -463,10 +514,12 @@ const showDiveForm = () => {
     }
 }
 
+// Hide the dive form, ready for a confirmation message
 const hideDiveForm = () => {
     document.getElementById('addDiveForm').style.display = 'none';
 }
 
+// Clear the dive form inputs
 const clearDiveForm = () => {
     document.getElementById('diveDate').value = '';
     document.getElementById('diveName').value = '';
@@ -478,6 +531,7 @@ const clearDiveForm = () => {
     document.getElementById('bottomTime').value = '';
 }
 
+// Show a confirmation message
 const showConfirmationMessage = (message, callback) => {
     hideRandomImage();
     const messageContainer = document.getElementById('confirmationMessage');
@@ -499,6 +553,7 @@ const showConfirmationMessage = (message, callback) => {
     }
 };
 
+// Show a random image after a delay
 function showRandomImage() {
     console.log('showRandomImage called');
 
@@ -534,10 +589,10 @@ function showRandomImage() {
         } else {
             console.log('mapToolsDiv not found');
         }
-    }, 3500); // Forced delay matching the confirmation message duration
+    }, 3500);
 }
 
-
+// Hide the random image
 const hideRandomImage = () => {
     const randomImage = document.getElementById('randomImage');
     if (randomImage) {
@@ -546,6 +601,7 @@ const hideRandomImage = () => {
     }
 };
 
+// Observe the confirmation message and show random image when visible
 const confirmationMessage = document.getElementById('confirmationMessage');
 if (confirmationMessage) {
     const observer = new MutationObserver((mutations) => {
@@ -565,6 +621,7 @@ if (confirmationMessage) {
     console.log('confirmationMessage not found');
 }
 
+// Add a new dive log and show confirmation message
 document.getElementById('addDiveForm').onsubmit = (e) => {
     e.preventDefault();
     const locationStr = document.getElementById('diveLocation').value;
@@ -583,6 +640,7 @@ document.getElementById('addDiveForm').onsubmit = (e) => {
     showConfirmationMessage('New marker added to the map', showRandomImage);
 };
 
+// Update a dive log on the server
 const updateDiveLog = (marker, updatedDiveLog) => {
     hideRandomImage();
 
@@ -610,6 +668,7 @@ const updateDiveLog = (marker, updatedDiveLog) => {
     .catch(error => alert('Error: ' + error.message));
 };
 
+// Debounce function to limit the rate of fucntion execution
 const debounce = (func, wait) => {
     let timeout;
     return function (...args) {
