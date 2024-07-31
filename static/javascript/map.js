@@ -337,7 +337,7 @@ const loadDiveLogs = () => {
 };
 
 // Mobile functionality to delete marker
-const LONG_PRESS_DURATION = 800;
+const LONG_PRESS_DURATION = 800; // Duration for long press in milliseconds
 
 const addLongPressListener = (element, callback) => {
     let timer;
@@ -384,6 +384,13 @@ Bottom Time: ${diveLog.bottom_time !== undefined ? diveLog.bottom_time + ' minut
     });
 
     markerContent.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+        showConfirmationDialog(() => {
+            removeMarker(marker, location);
+        });
+    });
+
+    addLongPressListener(markerContent, (event) => {
         event.preventDefault();
         showConfirmationDialog(() => {
             removeMarker(marker, location);
