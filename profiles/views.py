@@ -84,17 +84,3 @@ def profile_picture_upload(request):
         form = ProfileForm(instance=request.user.profile)
     
     return render(request, 'profiles/profile.html', {'form': form})
-
-@login_required
-def profile_view(request):
-    if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=request.user.profile)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')
-    else:
-        form = ProfileForm(instance=request.user.profile)
-
-    return render(request, 'profiles/profile.html', {
-        'form': form,
-    })
