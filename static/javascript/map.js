@@ -173,10 +173,15 @@ const createClusterContent = (count) => {
 const initMap = async () => {
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
+    const allowedBounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(-85, -180),
+        new google.maps.LatLng(85, 180)
+    );
+
     const mapDiv = document.getElementById('map');
     diveMap = new google.maps.Map(mapDiv, {
         center: { lat: 30.149, lng: 17.041 },
-        zoom: 2.2,
+        zoom: 2,
         mapId: '23026dc1bc7a39cd',
         mapTypeId: google.maps.MapTypeId.HYBRID,
         streetViewControl: false,
@@ -184,6 +189,44 @@ const initMap = async () => {
         heading: 90,
         gestureHandling: 'auto',
         draggable: true,
+        restriction: {
+            latLngBounds: allowedBounds,
+            strictBounds: true,
+        },
+        minZoom: 2.2063333330154418,
+        maxZoom: 17.111734537662922,
+        zoomControl: true,
+        fullscreenControl: false
+    });
+
+    diveMap.setOptions({
+        zoomControl: true
+    });
+
+    // Custom control buttons for map zoom and reset.
+    const zoomInButton = document.createElement('button');
+    zoomInButton.textContent = '+';
+    zoomInButton.classList.add('custom-map-control-button');
+    mapDiv.appendChild(zoomInButton);
+    zoomInButton.addEventListener('click', () => {
+        diveMap.setZoom(diveMap.getZoom() + 1);
+    });
+
+    const zoomOutButton = document.createElement('button');
+    zoomOutButton.textContent = '-';
+    zoomOutButton.classList.add('custom-map-control-button');
+    mapDiv.appendChild(zoomOutButton);
+    zoomOutButton.addEventListener('click', () => {
+        diveMap.setZoom(diveMap.getZoom() - 1);
+    });
+
+    const resetButton = document.createElement('button');
+    resetButton.textContent = 'Reset';
+    resetButton.classList.add('custom-map-control-button');
+    mapDiv.appendChild(resetButton);
+    resetButton.addEventListener('click', () => {
+        diveMap.setCenter({ lat: 30.149, lng: 17.041 });
+        diveMap.setZoom(2.2);
     });
 
     // Add event listener for double click to add marker
@@ -245,6 +288,7 @@ const initMap = async () => {
 // Handle map zoom change event
 const handleZoomChange = () => {
     const currentZoom = diveMap.getZoom();
+    console.log("Current Zoom Level:", currentZoom);
     if (currentZoom <= 5) {
         if (markerCluster) {
             markerCluster.addMarkers(markersArray);
@@ -296,6 +340,7 @@ const addDiveLog = (location, diveLog, marker) => {
     .then(data => {
         if (data.status === 'success') {
             diveLog.id = data.dive_log;
+            marker.diveLog.id = diveLog.id;
             marker.diveLog = diveLog;
             marker.title = 
             `
@@ -378,6 +423,9 @@ Bottom Time: ${diveLog.bottom_time !== undefined ? diveLog.bottom_time + ' minut
     });
 
     marker.diveLog = diveLog || {};
+    if (diveLog.id) {
+        marker.diveLog.id = diveLog.id;
+    }
 
     marker.addListener('click', () => {
         showEditDiveForm(marker);
@@ -656,9 +704,19 @@ document.getElementById('addDiveForm').onsubmit = (e) => {
     showConfirmationMessage('New marker added to the map', showRandomImage);
 };
 
+const showError = (message) => {
+    alert(message);
+};
+
 // Update a dive log on the server
 const updateDiveLog = (marker, updatedDiveLog) => {
     hideRandomImage();
+
+    // Ensure ID and data are valid
+    if (!marker.diveLog.id) {
+        alert('Error: Dive log ID is missing.');
+        return;
+    }
 
     const payload = { id: marker.diveLog.id, ...updatedDiveLog };
     console.log('Payload being sent:', payload);
@@ -681,7 +739,10 @@ const updateDiveLog = (marker, updatedDiveLog) => {
             alert('Failed to update dive log: ' + data.message);
         }
     })
-    .catch(error => alert('Error: ' + error.message));
+    .catch(error => {
+        console.error('Error:', error.message);
+        alert('Error: ' + error.message);
+    });
 };
 
 // Debounce function to limit the rate of fucntion execution

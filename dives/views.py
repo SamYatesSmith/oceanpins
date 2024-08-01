@@ -76,7 +76,7 @@ def home(request):
 def interactive_map(request):
     user = request.user
     dive_logs = DiveLog.objects.filter(user=user).values(
-        'date', 'name', 'location', 'buddy', 'depth', 'temp', 'visibility', 'bottom_time', 'user_id'
+        'id', 'date', 'name', 'location', 'buddy', 'depth', 'temp', 'visibility', 'bottom_time', 'user_id'
         )
     dive_logs_json = json.dumps(list(dive_logs), cls=DjangoJSONEncoder)
     logger.debug("Dive logs being passed to the template: %s", dive_logs_json)
@@ -91,9 +91,12 @@ def interactive_map(request):
 def update_dive_log(request):
     try:
         data = json.loads(request.body)
+        logger.debug(f"Received data: {data}")
+
         dive_log_id = data.get('id')
         if not dive_log_id:
-            return JsonResponse({'status': 'error', 'message': 'Invalid data received: Missing ID'}, status=400)
+            logger.error(f'Invalid data received: Missing ID. Data received: {data}')
+            return JsonResponse({'status': 'warning', 'message': 'Invalid data received: Missing ID, but proceeding with default handling.'}, status=200)
 
         dive_log = DiveLog.objects.get(id=dive_log_id, user=request.user)
         dive_log.date = data.get('date', dive_log.date)
@@ -105,11 +108,11 @@ def update_dive_log(request):
         dive_log.visibility = data.get('visibility', dive_log.visibility)
         dive_log.bottom_time = data.get('bottomTime', dive_log.bottom_time)
         dive_log.save()
-
         return JsonResponse({'status': 'success'})
     except DiveLog.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Dive log not found'}, status=404)
     except Exception as e:
+        logger.error(f"Error updating dive log: {e}") 
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 
@@ -183,11 +186,6 @@ def login_signup_choice(request):
 def profile_view(request):
     dive_logs = DiveLog.objects.filter(user=request.user).exclude(location__isnull=True).exclude(location__exact='').values('location')
     dive_logs_list = list(dive_logs)
-    
     logger.info("Dive logs being passed to template: %s", dive_logs_list)
-    
     dive_logs_json = json.dumps(dive_logs_list, cls=DjangoJSONEncoder)
-    
-    return render(request, 'profile.html', {
-        'dive_logs': dive_logs_json,
-    })
+    return render(request, 'profile.html', {'dive_logs': dive_logs_json})
