@@ -199,24 +199,10 @@ const initMap = async () => {
         fullscreenControl: false
     });
 
-    let retries = 0;
-    const maxRetries = 5;
-
-    const tryLoadDiveLogs = () => {
-        if (retries < maxRetries) {
-            if (diveMap.getBounds()) {
-                loadDiveLogs();
-            } else {
-                retries++;
-                setTimeout(tryLoadDiveLogs, 1000);
-            }
-        } else {
-            console.error('Failed to load dive logs after maximum retries');
+    diveMap.addListener('idle', () => {
+        if (!markersArray.length) {
+            loadDiveLogs();
         }
-    };
-
-    diveMap.addListener('tilesloaded', () => {
-        tryLoadDiveLogs();
     });
 
     diveMap.setOptions({
@@ -308,10 +294,11 @@ const initMap = async () => {
 // Handle map zoom change event
 const handleZoomChange = () => {
     const currentZoom = diveMap.getZoom();
-    console.log("Current Zoom Level:", currentZoom);
     if (currentZoom <= 5) {
         if (markerCluster) {
+            markerCluster.clearMarkers();
             markerCluster.addMarkers(markersArray);
+            markersArray.forEach(marker => marker.setMap(null));
         }
     } else {
         if (markerCluster) {
@@ -395,6 +382,9 @@ const loadDiveLogs = () => {
             if (!diveLogs || !Array.isArray(diveLogs)) {
                 throw new Error("Invalid dive logs data");
             }
+            markersArray.forEach(marker => marker.setMap(null));
+            markersArray = [];
+
             diveLogs.forEach(log => {
                 if (log.location) {
                     const [lat, lng] = log.location.split(',').map(coord => parseFloat(coord).toFixed(6));
@@ -476,10 +466,10 @@ Bottom Time: ${diveLog.bottom_time !== undefined ? diveLog.bottom_time + ' minut
     });
 
     markersArray.push(marker);
-    if (diveMap.getZoom() <= 5) {
+    if (diveMap.getZoom() <= 5 && markerCluster) {
         markerCluster.addMarker(marker);
     } else {
-        marker.map = diveMap;
+        marker.setMap(diveMap);
     }
 
     return marker;
