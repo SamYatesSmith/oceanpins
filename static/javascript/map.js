@@ -199,6 +199,26 @@ const initMap = async () => {
         fullscreenControl: false
     });
 
+    let retries = 0;
+    const maxRetries = 5;
+
+    const tryLoadDiveLogs = () => {
+        if (retries < maxRetries) {
+            if (diveMap.getBounds()) {
+                loadDiveLogs();
+            } else {
+                retries++;
+                setTimeout(tryLoadDiveLogs, 1000);
+            }
+        } else {
+            console.error('Failed to load dive logs after maximum retries');
+        }
+    };
+
+    diveMap.addListener('tilesloaded', () => {
+        tryLoadDiveLogs();
+    });
+
     diveMap.setOptions({
         zoomControl: true
     });
@@ -372,13 +392,23 @@ const loadDiveLogs = () => {
         .then(response => response.json())
         .then(data => {
             const diveLogs = data.dive_logs;
+            if (!diveLogs || !Array.isArray(diveLogs)) {
+                throw new Error("Invalid dive logs data");
+            }
             diveLogs.forEach(log => {
-                const [lat, lng] = log.location.split(',').map(coord => parseFloat(coord).toFixed(6));
-                const location = new google.maps.LatLng(parseFloat(lat), parseFloat(lng));
-                addMarker(location, log);
+                if (log.location) {
+                    const [lat, lng] = log.location.split(',').map(coord => parseFloat(coord).toFixed(6));
+                    const location = new google.maps.LatLng(parseFloat(lat), parseFloat(lng));
+                    addMarker(location, log);
+                } else {
+                    console.error("Invalid log location:", log);
+                }
             });
         })
-        .catch(error => alert('Error loading dive logs: ' + error.message));
+        .catch(error => {
+            console.error('Error loading dive logs:', error.message);
+            alert('Error loading dive logs: ' + error.message);
+        });
 };
 
 // Mobile functionality to delete marker
