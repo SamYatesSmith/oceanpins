@@ -773,3 +773,13 @@ const debounce = (func, wait) => {
         timeout = setTimeout(() => func(...args), wait);
     };
 }
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        getCookie,
+        clearLocalStorage,
+        createClusterContent,
+        debounce,
+        formatLocation
+    };
+}

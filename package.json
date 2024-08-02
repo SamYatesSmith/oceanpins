@@ -1,0 +1,12 @@
+{
+  "name": "oceanpins",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^27.5.1",
+    "jest-environment-jsdom": "^27.5.1",
+    "jquery": "^3.7.1"
+  }
+}
