@@ -52,10 +52,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cloudinary_storage',
     'cloudinary',
-    'dive_app',
     'profiles',
     'dives',
-    'wishlist',
 ]
 
 MIDDLEWARE = [
