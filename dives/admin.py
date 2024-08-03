@@ -7,5 +7,3 @@ class DiveLogAdmin(admin.ModelAdmin):
     list_display = ('name', 'date', 'location', 'buddy', 'depth')
     search_fields = ('name', 'location', 'buddy')
     list_filter = ('date', 'location')
-
-

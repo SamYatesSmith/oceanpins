@@ -3,7 +3,12 @@ from django.conf import settings
 
 
 class DiveLog(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
     date = models.DateField()
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255, db_index=True)
@@ -18,8 +23,12 @@ class DiveLog(models.Model):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='dives_profile')
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='dives_profile'
+    )
 
 
-    def __str__(self):
-        return self.user.username
+def __str__(self):
+    return self.user.username

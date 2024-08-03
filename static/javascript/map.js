@@ -20,15 +20,13 @@ const getCookie = (name) => {
         });
     }
     return cookieValue;
-}
-
-const csrftoken = getCookie('csrftoken');
+};
 
 // Function to clear local and session storage
 const clearLocalStorage = () => {
     localStorage.clear();
     sessionStorage.clear();
-}
+};
 
 $(document).ready(function() {
     // Toggle guide section visibility on button click
@@ -289,7 +287,7 @@ const initMap = async () => {
     google.maps.event.addListener(markerCluster, 'clusterclick', function(cluster) {
         diveMap.fitBounds(cluster.getBounds());
     });
-}
+};
 
 // Handle map zoom change event
 const handleZoomChange = () => {
@@ -371,7 +369,7 @@ const addDiveLog = (location, diveLog, marker) => {
 // Format location as a string
 const formatLocation = (location) => {
     return `${location.lat().toFixed(6)}, ${location.lng().toFixed(6)}`;
-}
+};
 
 // Load dive logs from the server
 const loadDiveLogs = () => {
@@ -533,7 +531,7 @@ const showEditDiveForm = (marker) => {
         };
         updateDiveLog(marker, updatedDiveLog);
     };
-}
+};
 
 // Functionality to remove markers from users Interactive Map and server
 const removeMarker = (marker, location) => {
@@ -580,7 +578,7 @@ const updateDiveFormLocation = (location) => {
     const latLngStr = `${location.lat()}, ${location.lng()}`;
     const diveLocation = document.getElementById('diveLocation');
     if (diveLocation) diveLocation.value = latLngStr;
-}
+};
 
 // Show the dive form
 const showDiveForm = () => {
@@ -596,12 +594,12 @@ const showDiveForm = () => {
     } else {
         console.error('addDiveForm element not found');
     }
-}
+};
 
 // Hide the dive form, ready for a confirmation message
 const hideDiveForm = () => {
     document.getElementById('addDiveForm').style.display = 'none';
-}
+};
 
 // Clear the dive form inputs
 const clearDiveForm = () => {
@@ -613,7 +611,7 @@ const clearDiveForm = () => {
     document.getElementById('waterTemp').value = '';
     document.getElementById('visibility').value = '';
     document.getElementById('bottomTime').value = '';
-}
+};
 
 // Show a confirmation message
 const showConfirmationMessage = (message, callback) => {
@@ -680,7 +678,7 @@ function showRandomImage() {
 const hideRandomImage = () => {
     const randomImage = document.getElementById('randomImage');
     if (randomImage) {
-        randomImage.remove()
+        randomImage.remove();
         console.log('randomImage hidden');
     }
 };
@@ -722,10 +720,6 @@ document.getElementById('addDiveForm').onsubmit = (e) => {
     };
     addDiveLog(location, diveLog);
     showConfirmationMessage('New marker added to the map', showRandomImage);
-};
-
-const showError = (message) => {
-    alert(message);
 };
 
 // Update a dive log on the server
@@ -772,7 +766,7 @@ const debounce = (func, wait) => {
         clearTimeout(timeout);
         timeout = setTimeout(() => func(...args), wait);
     };
-}
+};
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {

@@ -1,6 +1,13 @@
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
-from profiles.views import CustomLoginView, register, profile, profile_setup, profile_picture_upload
+from profiles.views import (
+    CustomLoginView,
+    register,
+    profile,
+    profile_setup,
+    profile_picture_upload
+)
+
 
 class TestUrls(SimpleTestCase):
     """
@@ -30,14 +37,16 @@ class TestUrls(SimpleTestCase):
 
     def test_profile_setup_url_is_resolved(self):
         """
-        Test that the profile-setup URL is correctly routed to the profile_setup view.
+        Test that the profile-setup URL is correctly routed
+        to the profile_setup view.
         """
         url = reverse('profile_setup')
         self.assertEqual(resolve(url).func, profile_setup)
 
     def test_profile_picture_upload_url_is_resolved(self):
         """
-        Test that the profile-picture-upload URL is correctly routed to the profile_picture_upload view.
+        Test that the profile-picture-upload URL is correctly
+        routed to the profile_picture_upload view.
         """
         url = reverse('profile_picture_upload')
         self.assertEqual(resolve(url).func, profile_picture_upload)

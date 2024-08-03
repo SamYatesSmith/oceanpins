@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from dives.models import DiveLog
 from profiles.models import Profile
 
+
 class TestViews(TestCase):
     def setUp(self):
         self.client = Client()
@@ -14,9 +15,11 @@ class TestViews(TestCase):
         self.remove_dive_log_url = reverse('remove_dive_log')
         self.interactive_map_url = reverse('interactive_map')
         self.get_divelog_markers_url = reverse('get_divelog_markers')
-
-        self.user = get_user_model().objects.create_user(username='testuser', password='password123')
-        self.profile = Profile.objects.create(user=self.user)  # Create a profile for the user
+        self.user = get_user_model().objects.create_user(
+            username='testuser',
+            password='password123'
+        )
+        self.profile = Profile.objects.create(user=self.user)
         self.client.login(username='testuser', password='password123')
 
     def test_add_dive_log_view(self):

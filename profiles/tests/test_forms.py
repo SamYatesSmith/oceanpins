@@ -2,6 +2,7 @@ from django.test import TestCase
 from profiles.forms import CustomUserCreationForm, ProfileForm, DiveForm
 from profiles.models import CustomUser
 
+
 class TestForms(TestCase):
     """
     Test suite for the application's forms.
@@ -41,11 +42,15 @@ class TestForms(TestCase):
         self.assertIn('password1', form.errors)
         self.assertIn('password2', form.errors)
 
+
 def test_profile_form_valid_data(self):
     """
     Test ProfileForm with valid data.
     """
-    user = CustomUser.objects.create_user(username='testuser', password='password123')
+    user = CustomUser.objects.create_user(
+        username='testuser',
+        password='password123'
+    )
     form = ProfileForm(data={
         'dive_school': 'Test Dive School',
         'cert_level': 'Advanced',
@@ -59,6 +64,7 @@ def test_profile_form_valid_data(self):
 
     form.instance.user = user
     self.assertTrue(form.is_valid())
+
 
 def test_profile_form_invalid_data(self):
     """
@@ -74,11 +80,15 @@ def test_profile_form_invalid_data(self):
     self.assertIn('training_location', form.errors)
     self.assertIn('biography', form.errors)
 
+
 def test_dive_form_valid_data(self):
     """
     Test DiveForm with valid data.
     """
-    user = CustomUser.objects.create_user(username='testuser', password='password123')
+    user = CustomUser.objects.create_user(
+        username='testuser',
+        password='password123'
+    )
     form = DiveForm(data={
         'title': 'Test Dive',
         'description': 'A test dive description.',

@@ -13,7 +13,11 @@ class CustomUserModelTest(TestCase):
         """
         Set up a test user for CustomUser model tests.
         """
-        self.user = get_user_model().objects.create_user(username='testuser', password='12345', bio='Test bio')
+        self.user = get_user_model().objects.create_user(
+            username='testuser',
+            password='12345',
+            bio='Test bio'
+        )
 
     def test_user_creation(self):
         """
@@ -24,9 +28,13 @@ class CustomUserModelTest(TestCase):
 
     def test_profile_property(self):
         """
-        Test that the profile property correctly returns the related Profile instance.
+        Test that the profile property correctly returns the
+        related Profile instance.
         """
-        profile = Profile.objects.create(user=self.user, dive_school=Profile.PADI)
+        profile = Profile.objects.create(
+            user=self.user,
+            dive_school=Profile.PADI
+        )
         self.assertEqual(self.user.profile, profile)
 
 
@@ -38,7 +46,10 @@ class ProfileModelTest(TestCase):
         """
         Set up a test user and profile for Profile model tests.
         """
-        self.user = get_user_model().objects.create_user(username='testuser', password='12345')
+        self.user = get_user_model().objects.create_user(
+            username='testuser',
+            password='12345'
+        )
         self.profile = Profile.objects.create(
             user=self.user,
             dive_school='PADI',
@@ -58,10 +69,16 @@ class ProfileModelTest(TestCase):
         self.assertEqual(self.profile.dive_school, 'PADI')
         self.assertEqual(self.profile.cert_level, 'Advanced')
         self.assertEqual(self.profile.fav_dive_site, 'Great Barrier Reef')
-        self.assertEqual(self.profile.next_dive_trip_date.strftime('%Y-%m-%d'), '2024-12-01')
+        self.assertEqual(
+            self.profile.next_dive_trip_date.strftime('%Y-%m-%d'),
+            '2024-12-01'
+        )
         self.assertEqual(self.profile.next_dive_location, 'Hawaii')
         self.assertEqual(self.profile.training_location, 'Australia')
-        self.assertEqual(self.profile.biography, 'Loves underwater photography')
+        self.assertEqual(
+            self.profile.biography,
+            'Loves underwater photography'
+        )
         self.assertEqual(
             self.profile.profile_pic,
             'https://res.cloudinary.com/dt6dg1u1o/image/upload/v1716999970/static/images/user_default.png'
@@ -82,7 +99,10 @@ class DiveModelTest(TestCase):
         """
         Set up a test user and dive for Dive model tests.
         """
-        self.user = get_user_model().objects.create_user(username='testuser', password='12345')
+        self.user = get_user_model().objects.create_user(
+            username='testuser',
+            password='12345'
+        )
         self.dive = Dive.objects.create(
             title='Test Dive',
             description='Test Description',
@@ -92,9 +112,14 @@ class DiveModelTest(TestCase):
     @patch('profiles.models.Dive.image', new_callable=PropertyMock)
     def test_dive_creation(self, mock_image):
         """
-        Test that the dive is created with the correct attributes and mock the image URL.
+        Test that the dive is created with the correct attributes and
+        mock the image URL.
         """
-        mock_image.return_value.url = 'https://res.cloudinary.com/dt6dg1u1o/image/upload/v1716999970/static/images/dive_default.png'
+        mock_image.return_value.url = (
+            'https://res.cloudinary.com/dt6dg1u1o/image/upload/v1716999970/'
+            'static/images/dive_default.png'
+        )
+
         self.assertEqual(self.dive.title, 'Test Dive')
         self.assertEqual(self.dive.description, 'Test Description')
         self.assertEqual(self.dive.image.url, mock_image.return_value.url)

@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from profiles.models import Profile
 
+
 class TestViews(TestCase):
     """
     Test suite for the profiles views.
@@ -18,8 +19,10 @@ class TestViews(TestCase):
         self.profile_setup_url = reverse('profile_setup')
         self.profile_url = reverse('profile')
         self.profile_picture_upload_url = reverse('profile_picture_upload')
-
-        self.user = get_user_model().objects.create_user(username='testuser', password='password123')
+        self.user = get_user_model().objects.create_user(
+            username='testuser',
+            password='password123'
+        )
         Profile.objects.create(user=self.user)
         self.client.login(username='testuser', password='password123')
 
@@ -123,6 +126,6 @@ class TestViews(TestCase):
             'profile_pic': ''
         })
         if response.context and 'form' in response.context:
-            print(response.context['form'].errors) 
+            print(response.context['form'].errors)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, self.profile_url)

@@ -36,7 +36,7 @@
                                     <div class="d-flex flex-column">
                                         {% for field in form %}
                                             <div class="form-group row">
-                                                <label class="profileLabels col-sm-3 col-form-label">{{ field.label_tag }}</label>
+                                                <label for="{{ field.id_for_label }}" class="profileLabels col-sm-3 col-form-label">{{ field.label }}</label>
                                                 <div class="col-sm-9">
                                                     {{ field }}
                                                     <small class="text-muted">{{ field.help_text }}</small>
@@ -64,7 +64,7 @@
             </div>
         </div>
     </div>
-</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPI3E9RTADYzaO0QRLzTbno11uKf-RxVQ&map_ids=23026dc1bc7a39cd&libraries=places,marker"></script>
 <script>
